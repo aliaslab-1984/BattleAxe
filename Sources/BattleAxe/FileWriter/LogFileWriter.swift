@@ -5,10 +5,22 @@ public final class LogFileWriter: FileWriter {
     private var filePath: String
     private var fileHandle: FileHandle?
     private var queue: DispatchQueue
+    private static let queueName: String = "LogFileWriter"
     
+    public init(filename: String, appGroup: String) {
+        let fileManager = FileManager.default
+        guard var url = fileManager.containerURL(forSecurityApplicationGroupIdentifier: appGroup) else {
+            fatalError("Impossible to set url.")
+        }
+        
+        url.appendPathComponent(filename + ".logs")
+        self.filePath = url.path
+        self.queue = DispatchQueue(label: Self.queueName)
+    }
+    f
     public init(filePath: String) {
         self.filePath = filePath
-        self.queue = DispatchQueue(label: "Log File")
+        self.queue = DispatchQueue(label: Self.queueName)
     }
     
     deinit {
