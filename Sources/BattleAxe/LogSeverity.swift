@@ -15,7 +15,7 @@ public enum LogSeverity: Int, Comparable {
 
 extension LogSeverity {
     
-    var emoji: String {
+    public var emoji: String {
         switch self {
         case .info:
             return "🔷"

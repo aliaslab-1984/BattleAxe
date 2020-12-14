@@ -6,20 +6,20 @@ public final class LogService {
     
     private static var providers = [LogProvider]()
     
-    static let shared = LogService(providers: providers)
+    public static let shared = LogService(providers: providers)
     
-    var minimumSeverity: LogSeverity = .debug
-    var configuration: LoggerConfiguration = .standard
+    public var minimumSeverity: LogSeverity = .debug
+    public var configuration: LoggerConfiguration = .standard
     
     private init(providers: [LogProvider]) {
         LogService.providers = providers
     }
     
-    static func register(provider: LogProvider) {
+    public static func register(provider: LogProvider) {
         providers.append(provider)
     }
     
-    func info(_ object: Any,
+    public func info(_ object: Any,
               filename: String = #file,
               funcName: String = #function,
               line: Int = #line) {
@@ -35,7 +35,7 @@ public final class LogService {
                   funcName: funcName)
     }
     
-    func debug(_ object: Any,
+    public func debug(_ object: Any,
                filename: String = #file,
                line: Int = #line,
                funcName: String = #function) {
@@ -51,7 +51,7 @@ public final class LogService {
                   funcName: funcName)
     }
     
-    func verbose(_ object: Any,
+    public func verbose(_ object: Any,
                  filename: String = #file,
                  line: Int = #line,
                  funcName: String = #function) {
@@ -67,7 +67,7 @@ public final class LogService {
                   funcName: funcName)
     }
     
-    func warning(_ object: Any,
+    public func warning(_ object: Any,
                  filename: String = #file,
                  line: Int = #line,
                  funcName: String = #function) {
@@ -83,7 +83,7 @@ public final class LogService {
                   funcName: funcName)
     }
     
-    func error(_ object: Any,
+    public func error(_ object: Any,
                filename: String = #file,
                line: Int = #line,
                funcName: String = #function) {

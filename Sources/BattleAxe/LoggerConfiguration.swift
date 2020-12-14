@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct LoggerConfiguration: Equatable {
+public struct LoggerConfiguration: Equatable {
     
     enum LogIngredient: CaseIterable, Equatable {
         case functionName
@@ -19,9 +19,9 @@ struct LoggerConfiguration: Equatable {
     
     /// The standard configuration: it inclues all the available ingredients. The logs will include the
     /// filename, the function's name and the line number.
-    static let standard: LoggerConfiguration = .init(ingredients: .init(LogIngredient.allCases))
+    public static let standard: LoggerConfiguration = .init(ingredients: .init(LogIngredient.allCases))
     /// A smaller log information: it includes only the function name in the log output.
-    static let minimal: LoggerConfiguration = .init(ingredients: .init(arrayLiteral: .functionName))
+    public static let minimal: LoggerConfiguration = .init(ingredients: .init(arrayLiteral: .functionName))
     /// An even smaller log information: it doesn't includes any information about the file or the function's name.
-    static let onlyMessage: LoggerConfiguration = .init(ingredients: .init())
+    public static let onlyMessage: LoggerConfiguration = .init(ingredients: .init())
 }
