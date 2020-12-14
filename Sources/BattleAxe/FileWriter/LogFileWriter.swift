@@ -6,7 +6,7 @@ public final class LogFileWriter: FileWriter {
     private var fileHandle: FileHandle?
     private var queue: DispatchQueue
     
-    init(filePath: String) {
+    public init(filePath: String) {
         self.filePath = filePath
         self.queue = DispatchQueue(label: "Log File")
     }
