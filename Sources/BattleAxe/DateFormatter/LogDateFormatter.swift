@@ -1,7 +1,7 @@
 import Foundation
 
 public final class LogDateFormatter: DateFormatter {
-    convenience init(dateFormat: String = "yyyy-MM-dd HH:mm:ssSSS") {
+    public convenience init(dateFormat: String = "yyyy-MM-dd HH:mm:ssSSS") {
         self.init()
         self.dateFormat = dateFormat
         self.locale = Locale.current
