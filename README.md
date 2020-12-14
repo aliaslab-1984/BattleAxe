@@ -9,8 +9,15 @@ A good place for that could be `application(_ application: UIApplication, didFin
 
 Here's a small example to intilaize `LogService`:
 ``` swift
-        let logDateFormatter = LogDateFormatter(dateFormat: "yyyy-MM-dd HH:mm:ssSSS")
-        LogService.register(provider: ConsoleLogProvider(dateFormatter: logDateFormatter))
-        LogService.register(provider: FileLogProvider(dateFormatter: logDateFormatter,
-                                                      fileWriter: LogFileWriter(filePath: "~/logs.log")))
+let logDateFormatter = LogDateFormatter(dateFormat: "yyyy-MM-dd HH:mm:ssSSS")
+LogService.register(provider: ConsoleLogProvider(dateFormatter: logDateFormatter))
+LogService.register(provider: FileLogProvider(dateFormatter: logDateFormatter,
+                                              fileWriter: LogFileWriter(filePath: "~/logs.log")))
+// And so on for all your providers..
+```
+
+Once you're done with the configuration, you can start logging by calling:
+
+``` swift
+LogService.shared.debug("Your first log!")
 ```
