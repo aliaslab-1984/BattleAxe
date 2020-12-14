@@ -9,6 +9,13 @@ public struct ConsoleLogProvider: LogProvider {
     }
     
     public func log(_ severity: LogSeverity, message: String, file: String, function: String, line: Int) {
-        print("[\(severity.prettyDescription) \(dateFormatter.getCurrentDateAsString()) \(file):\(function):\(line)] \(message)")
+        switch LogService.shared.configuration {
+        case .standard:
+            print("[\(severity.prettyDescription) \(dateFormatter.getCurrentDateAsString()) \(file):\(function):\(line)] \(message)")
+        case .minimal:
+            print("[\(severity.prettyDescription) \(dateFormatter.getCurrentDateAsString()) \(function)] \(message)")
+        default:
+            print("[\(severity.prettyDescription) \(dateFormatter.getCurrentDateAsString())] \(message)")
+        }
     }
 }
