@@ -24,11 +24,11 @@ public final class LogFileWriter: FileWriter {
     }
     
     public func fileData() -> String {
-        guard let data = FileManager.default.contents(atPath: self.filePath) else {
+        guard let data = FileManager.default.contents(atPath: self.filePath), let stringRepresentation = String(data: data, encoding: .utf8) else {
             return ""
         }
         
-        return String(data: data, encoding: .utf8)
+        return stringRepresentation
     }
     
     deinit {
