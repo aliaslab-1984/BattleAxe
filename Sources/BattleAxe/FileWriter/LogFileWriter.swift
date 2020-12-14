@@ -17,7 +17,7 @@ public final class LogFileWriter: FileWriter {
         self.filePath = url.path
         self.queue = DispatchQueue(label: Self.queueName)
     }
-    f
+    
     public init(filePath: String) {
         self.filePath = filePath
         self.queue = DispatchQueue(label: Self.queueName)
