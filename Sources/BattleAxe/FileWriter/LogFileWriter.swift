@@ -23,6 +23,14 @@ public final class LogFileWriter: FileWriter {
         self.queue = DispatchQueue(label: Self.queueName)
     }
     
+    public func fileData() -> String {
+        guard let data = FileManager.default.contents(atPath: self.filePath) else {
+            return ""
+        }
+        
+        return String(data: data, encoding: .utf8)
+    }
+    
     deinit {
         fileHandle?.closeFile()
     }
