@@ -10,6 +10,7 @@ public final class LogService {
     
     public var minimumSeverity: LogSeverity = .debug
     public var configuration: LoggerConfiguration = .standard
+    public var enabled: Bool = true
     
     private init(providers: [LogProvider]) {
         LogService.providers = providers
@@ -24,7 +25,7 @@ public final class LogService {
               funcName: String = #function,
               line: Int = #line) {
         
-        guard minimumSeverity >= .info  else {
+        guard minimumSeverity >= .info, enabled else {
             return
         }
         
@@ -40,7 +41,7 @@ public final class LogService {
                line: Int = #line,
                funcName: String = #function) {
         
-        guard minimumSeverity >= .debug  else {
+        guard minimumSeverity >= .debug, enabled  else {
             return
         }
         
@@ -56,7 +57,7 @@ public final class LogService {
                  line: Int = #line,
                  funcName: String = #function) {
         
-        guard minimumSeverity >= .verbose  else {
+        guard minimumSeverity >= .verbose, enabled  else {
             return
         }
         
@@ -72,7 +73,7 @@ public final class LogService {
                  line: Int = #line,
                  funcName: String = #function) {
         
-        guard minimumSeverity >= .warning  else {
+        guard minimumSeverity >= .warning, enabled  else {
             return
         }
         
@@ -88,7 +89,7 @@ public final class LogService {
                line: Int = #line,
                funcName: String = #function) {
         
-        guard minimumSeverity >= .error  else {
+        guard minimumSeverity >= .error, enabled  else {
             return
         }
         
