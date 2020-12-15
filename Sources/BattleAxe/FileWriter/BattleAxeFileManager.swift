@@ -18,7 +18,7 @@ final class BattleAxeFileManager {
     /// - Returns: The path created, nil if an error occurred.
     static func createLogsFolderIfNeeded(_ path: String) throws -> String? {
         let finalPath = path + "/" + Self.folderName
-        vafr isDir: ObjCBool = false
+        var isDir: ObjCBool = false
         if fileManager.fileExists(atPath: finalPath,
                                   isDirectory: &isDir) {
             if isDir.boolValue {
