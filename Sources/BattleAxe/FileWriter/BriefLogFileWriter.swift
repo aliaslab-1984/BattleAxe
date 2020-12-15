@@ -1,5 +1,5 @@
 //
-//  SmallLogFileWriter.swift
+//  BriefLogFileWriter.swift
 //  
 //
 //  Created by Francesco Bianco on 15/12/2020.
@@ -7,7 +7,9 @@
 
 import Foundation
 
-public final class SmallLogFileWriter: FileWriter {
+/// FileWriter that stores logs in a more compact format:
+/// `message [number of times]\n`
+public final class BriefLogFileWriter: FileWriter {
     
     private var filePath: String
     private var fileHandle: FileHandle?
@@ -20,36 +22,20 @@ public final class SmallLogFileWriter: FileWriter {
     
     public init(filename: String,
                 appGroup: String? = nil) {
-        let fileManager = FileManager.default
         
-        let url: URL
-        if let group = appGroup {
-            guard let customURL = fileManager.containerURL(forSecurityApplicationGroupIdentifier: group) else {
-                fatalError("Impossible to retreive appgroup url.")
-            }
-            url = customURL
-        } else {
-            guard let customURL = try? fileManager.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false) else {
-                fatalError("Impossible to retreive default logs URL.")
-            }
-            url = customURL
+        guard let url = BAFileManager.standard.baseURLFor(appGroup: appGroup) else {
+            fatalError("Unable to get logs url.")
         }
-        
         self.filename = filename
         self.queue = DispatchQueue(label: Self.queueName, qos: .utility)
         do {
-            guard let path = try BattleAxeFileManager.createLogsFolderIfNeeded(url.path) else {
+            guard let path = try BAFileManager.standard.createLogsFolderIfNeeded(url.path) else {
                 fatalError("Unable to create a subdirectory.")
             }
-            self.filePath = path + "/" + filename + ".logs"
+            self.filePath = path + "/" + filename + BAFileManager.fileExtension
         } catch let error {
             fatalError(error.localizedDescription)
         }
-    }
-    
-    public init(filePath: String) {
-        self.filePath = filePath
-        self.queue = DispatchQueue(label: Self.queueName, qos: .utility)
     }
     
     public func fileData() -> String {
@@ -73,10 +59,7 @@ public final class SmallLogFileWriter: FileWriter {
             }
             
             guard let unMessage = lastMessage else {
-                if let data = message.data(using: String.Encoding.utf8) {
-                    file.seekToEndOfFile()
-                    file.write(data)
-                }
+                message.appendTo(file: file)
                 strongSelf.lastMessage = message
                 strongSelf.counter = 1
                 return
@@ -85,21 +68,13 @@ public final class SmallLogFileWriter: FileWriter {
             if message == unMessage {
                 strongSelf.counter += 1
             } else {
-                if let data = " [\(strongSelf.counter) times]\n".data(using: String.Encoding.utf8) {
-                    file.seekToEndOfFile()
-                    file.write(data)
-                }
+                " [\(strongSelf.counter) times]\n".appendTo(file: file)
                 strongSelf.counter = 1
                 strongSelf.lastMessage = message
-                if let data = message.data(using: String.Encoding.utf8) {
-                    file.seekToEndOfFile()
-                    file.write(data)
-                }
+                message.appendTo(file: file)
             }
         })
     }
-    
-    // The file will have the following format: `message [number of times]\n`
     
     private func getFileHandle() -> FileHandle? {
         if fileHandle == nil {

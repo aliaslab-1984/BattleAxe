@@ -7,7 +7,7 @@
 
 import Foundation
 
-public final class LogFileWriter: FileWriter {
+public final class StandardLogFileWriter: FileWriter {
     
     private var filePath: String
     private var filename: String
@@ -17,37 +17,21 @@ public final class LogFileWriter: FileWriter {
     
     public init(filename: String,
                 appGroup: String? = nil) {
-        let fileManager = FileManager.default
         
-        let url: URL
-        if let group = appGroup {
-            guard let customURL = fileManager.containerURL(forSecurityApplicationGroupIdentifier: group) else {
-                fatalError("Impossible to retreive appgroup url.")
-            }
-            url = customURL
-        } else {
-            guard let customURL = try? fileManager.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false) else {
-                fatalError("Impossible to retreive default logs URL.")
-            }
-            url = customURL
+        guard let url = BAFileManager.standard.baseURLFor(appGroup: appGroup) else {
+            fatalError("Unable to get logs url.")
         }
         
         self.filename = filename
         self.queue = DispatchQueue(label: Self.queueName, qos: .utility)
         do {
-            guard let path = try BattleAxeFileManager.createLogsFolderIfNeeded(url.path) else {
+            guard let path = try BAFileManager.standard.createLogsFolderIfNeeded(url.path) else {
                 fatalError("Unable to create a subdirectory.")
             }
-            self.filePath = path + "/" + filename + ".logs"
+            self.filePath = path + "/" + filename + BAFileManager.fileExtension
         } catch let error {
             fatalError(error.localizedDescription)
         }
-    }
-    
-    public init(filePath: String) {
-        self.filePath = filePath
-        self.filename = ""
-        self.queue = DispatchQueue(label: Self.queueName, qos: .utility)
     }
     
     /// Returns a string representation for the log collection.
@@ -67,12 +51,13 @@ public final class LogFileWriter: FileWriter {
     
     public func write(_ message: String) {
         queue.sync(execute: { [weak self] in
+            
+            let handler = RotatatingLogHandler()
+            handler.check(self?.filePath ?? "")
+            
             if let file = self?.getFileHandle() {
                 let printed = message + "\n"
-                if let data = printed.data(using: String.Encoding.utf8) {
-                    file.seekToEndOfFile()
-                    file.write(data)
-                }
+                printed.appendTo(file: file)
             }
         })
     }
