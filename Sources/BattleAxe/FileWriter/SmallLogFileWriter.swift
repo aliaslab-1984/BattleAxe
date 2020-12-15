@@ -67,10 +67,6 @@ public final class SmallLogFileWriter: FileWriter {
     
     public func write(_ message: String) {
         queue.sync(execute: { [weak self] in
-            defer {
-                fileHandle?.closeFile()
-            }
-            
             guard let strongSelf = self,
                   let file = strongSelf.getFileHandle() else {
                 return
@@ -95,6 +91,10 @@ public final class SmallLogFileWriter: FileWriter {
                 }
                 strongSelf.counter = 1
                 strongSelf.lastMessage = message
+            }
+            
+            defer {
+                fileHandle?.closeFile()
             }
         })
     }
