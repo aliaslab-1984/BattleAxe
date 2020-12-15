@@ -45,6 +45,11 @@ public final class StandardLogFileWriter: FileWriter {
         return stringRepresentation
     }
     
+    /// Returns the URL where the log collection is stored.
+    public func logsURL() -> URL? {
+        return URL(string: filePath)
+    }
+    
     deinit {
         fileHandle?.closeFile()
     }
