@@ -91,6 +91,10 @@ public final class SmallLogFileWriter: FileWriter {
                 }
                 strongSelf.counter = 1
                 strongSelf.lastMessage = message
+                if let data = message.data(using: String.Encoding.utf8) {
+                    file.seekToEndOfFile()
+                    file.write(data)
+                }
             }
         })
     }
