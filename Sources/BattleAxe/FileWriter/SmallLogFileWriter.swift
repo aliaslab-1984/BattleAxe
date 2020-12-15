@@ -92,10 +92,6 @@ public final class SmallLogFileWriter: FileWriter {
                 strongSelf.counter = 1
                 strongSelf.lastMessage = message
             }
-            
-            defer {
-                fileHandle?.closeFile()
-            }
         })
     }
     
