@@ -52,9 +52,6 @@ public final class LogFileWriter: FileWriter {
     
     /// Returns a string representation for the log collection.
     public func fileData() -> String {
-        defer {
-            fileHandle?.closeFile()
-        }
         
         guard let data = getFileHandle()?.readDataToEndOfFile(),
               let stringRepresentation = String(data: data, encoding: .utf8) else {
@@ -70,9 +67,6 @@ public final class LogFileWriter: FileWriter {
     
     public func write(_ message: String) {
         queue.sync(execute: { [weak self] in
-            defer {
-                fileHandle?.closeFile()
-            }
             if let file = self?.getFileHandle() {
                 let printed = message + "\n"
                 if let data = printed.data(using: String.Encoding.utf8) {
