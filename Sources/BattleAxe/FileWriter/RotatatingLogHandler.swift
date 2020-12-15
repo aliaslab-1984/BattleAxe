@@ -28,15 +28,15 @@ final class RotatatingLogHandler {
     
     func check(_ filePath: String) {
         
-        guard let information = try? FileManager.default.attributesOfFileSystem(forPath: filePath) else {
+        guard let information = try? FileManager.default.attributesOfItem(atPath: filePath) else {
             return
         }
         
-        guard let fileSize = information[.size] as? NSNumber else {
+        guard let fileSize = information[.size] as? UInt64 else {
             return
         }
         
-        if fileSize.intValue >= maxSize {
+        if Int(fileSize) >= maxSize {
             print("Larger")
         } else {
             print("Smaller")
