@@ -11,6 +11,10 @@ public struct FileLogProvider: LogProvider {
     }
     
     public func log(_ severity: LogSeverity, message: String, file: String, function: String, line: Int) {
-        fileWriter.write("[\(severity.prettyDescription) \(dateFormatter.getCurrentDateAsString()) \(file):\(function):\(line)] \(message)")
+        if let _ = fileWriter as? SmallLogFileWriter {
+            fileWriter.write("[\(severity.prettyDescription) \(file):\(function):\(line)] \(message)")
+        } else {
+            fileWriter.write("[\(severity.prettyDescription) \(dateFormatter.getCurrentDateAsString()) \(file):\(function):\(line)] \(message)")
+        }
     }
 }

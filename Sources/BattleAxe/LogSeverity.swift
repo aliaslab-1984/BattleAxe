@@ -2,11 +2,11 @@ import Foundation
 
 public enum LogSeverity: Int, Comparable {
     
-    case verbose = 1
-    case debug = 2
-    case info = 3
-    case warning = 4
-    case error = 5
+    case verbose = 10
+    case debug = 20
+    case info = 30
+    case warning = 40
+    case error = 50
     
     public static func <(lhs: LogSeverity, rhs: LogSeverity) -> Bool {
         return lhs.rawValue < rhs.rawValue
@@ -18,15 +18,15 @@ extension LogSeverity {
     public var emoji: String {
         switch self {
         case .info:
-            return "🔷"
+            return "ℹ️"
         case .debug:
-            return "◾️"
+            return "🔨"
         case .error:
-            return "❌"
+            return "💥"
         case .verbose:
-            return "◽️"
+            return "📗"
         case .warning:
-            return "🔶"
+            return "⚠️"
         }
     }
 }
