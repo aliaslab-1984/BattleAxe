@@ -52,8 +52,9 @@ public final class StandardLogFileWriter: FileWriter {
     public func write(_ message: String) {
         queue.sync(execute: { [weak self] in
             
-            let handler = RotatatingLogHandler()
-            handler.check(self?.filePath ?? "")
+            //let handler = RotatatingLogHandler()
+            // We need to check if the rotator's check passes before writing.
+            //_ = handler.check(self?.filePath ?? "", pendingData: message.data(using: .utf8) ?? Data())
             
             if let file = self?.getFileHandle() {
                 let printed = message + "\n"
