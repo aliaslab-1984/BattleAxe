@@ -15,7 +15,7 @@ final class RotatorTests: XCTestCase {
         let fileSize = UInt64(780)
         let rotator = RotatatingLogHandler(maxSize: 0, maxAge: 0)
         
-        let result = rotator.doesItFit(fileSize, pendingData.count)
+        let result = rotator.doesItFits(fileSize, pendingData.count)
         
         XCTAssert(result)
     }
@@ -25,7 +25,7 @@ final class RotatorTests: XCTestCase {
         let fileSize = UInt64(780)
         let rotator = RotatatingLogHandler(maxSize: 50.kiloBytes, maxAge: 0)
         
-        let result = rotator.doesItFit(fileSize, pendingData.count)
+        let result = rotator.doesItFits(fileSize, pendingData.count)
         
         XCTAssert(result)
     }
@@ -35,7 +35,7 @@ final class RotatorTests: XCTestCase {
         let fileSize = UInt64(780)
         let rotator = RotatatingLogHandler(maxSize: 50.kiloBytes, maxAge: 0)
         
-        let result = rotator.doesItFit(fileSize, pendingData.count)
+        let result = rotator.doesItFits(fileSize, pendingData.count)
         
         XCTAssertFalse(result)
     }
@@ -45,9 +45,9 @@ final class RotatorTests: XCTestCase {
         
         let fakeFileCreationDate = Date().addingTimeInterval(-14.0.daysToSeconds)
         
-        let result = rotator.isOlder(fakeFileCreationDate)
+        let result = rotator.isSmaller(than:fakeFileCreationDate)
         
-        XCTAssertFalse(result)
+        XCTAssert(result)
     }
     
     func olderCreationDateTest() {
@@ -55,9 +55,9 @@ final class RotatorTests: XCTestCase {
         
         let fakeFileCreationDate = Date().addingTimeInterval(-14.0.daysToSeconds)
         
-        let result = rotator.isOlder(fakeFileCreationDate)
+        let result = rotator.isSmaller(than: fakeFileCreationDate)
         
-        XCTAssert(result)
+        XCTAssertFalse(result)
     }
     
     func newerCreationDateTest() {
@@ -65,9 +65,9 @@ final class RotatorTests: XCTestCase {
         
         let fakeFileCreationDate = Date().addingTimeInterval(-24.0.minutesToSeconds)
         
-        let result = rotator.isOlder(fakeFileCreationDate)
+        let result = rotator.isSmaller(than:fakeFileCreationDate)
         
-        XCTAssertFalse(result)
+        XCTAssert(result)
     }
 
     static var allTests = [

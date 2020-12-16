@@ -64,4 +64,72 @@ final class BAFileManager {
         return url
     }
     
+    enum RotationError: Error {
+        case unableToParseURL
+    }
+    
+    /// Utility method that helps you to rotate the current log file into another.
+    /// Specifically it moves the current logs file into another file, and emptys the current log file.
+    /// - Parameter filename: The current log file name that needs to be rotated. (without file extension.)
+    /// - PArameter currentPath: The current path where the file is located (could include the file name or not.).
+    /// - Returns: The path where the old logs have been saved.
+    func rotateLogsFile(_ currentPath: String,
+                        filename: String) -> Result<String, RotationError> {
+        guard let url = URL(string: currentPath) else {
+            return .failure(.unableToParseURL)
+        }
+        
+        let currentDirectory: String
+        let oldFilePath: String
+        let oldFileContents: Data?
+        if url.isFileURL {
+            // The url is pointing to the current file
+            currentDirectory = currentPath.replacingOccurrences(of: filename + Self.fileExtension, with: "")
+            oldFileContents = Self.fileManager.contents(atPath: currentPath)
+            oldFilePath = currentPath
+        } else {
+            currentDirectory = currentPath
+            oldFilePath = currentPath + "/" + filename + Self.fileExtension
+            oldFileContents = Self.fileManager.contents(atPath: oldFilePath)
+        }
+        // Creates a new file with a unique name, we create the name using an hash of the current file.
+        let newFilename: String
+        if let contents = oldFileContents {
+            if #available(iOS 13.0, *) {
+                newFilename = SHA256.hash(data: contents).hexString
+            } else {
+                var hasher = Hasher()
+                hasher.combine(contents)
+                let finalValue = hasher.finalize()
+                newFilename = "\(finalValue)"
+            }
+            
+        } else {
+            // For some reason the old file is empty.. Strange
+            newFilename = "oldLogs"
+        }
+        let newPath = currentDirectory + newFilename + Self.fileExtension
+        
+        //If a file already exists at path, this method overwrites the contents of that
+        //file if the current process has the appropriate privileges to do so.
+        Self.fileManager.createFile(atPath: newPath, contents: oldFileContents, attributes: nil)
+        Self.fileManager.createFile(atPath: oldFilePath, contents: nil, attributes: nil)
+        return .success(newPath)
+    }
+    
 }
+
+#if canImport(CryptoKit)
+import CryptoKit
+
+@available(iOS 13.0, *)
+extension Digest {
+    var bytes: [UInt8] { Array(makeIterator()) }
+    var data: Data { Data(bytes) }
+
+    var hexString: String {
+        bytes.map { String(format: "%02X", $0) }.joined()
+    }
+}
+
+#endif
