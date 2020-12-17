@@ -69,21 +69,30 @@ public final class StandardLogFileWriter: FileWriter {
             let check = rotationConfiguration.check(strongSelf.filePath,
                                                     strongSelf.filename,
                                                     pendingData: message.data(using: .utf8) ?? Data())
-            
-            if !check {
-                // We need to rotate the current file.
-                let newFileName = BAFileManager
+            guard check else {
+                _ = BAFileManager
                                     .standard
                                     .rotateLogsFile(strongSelf.filePath,
                                                     filename: strongSelf.filename,
                                                     rotationConfiguration: rotationConfiguration)
+                // We close and make the file handle reference nil, so the getFileHandle() mehod returns a
+                // brand new file.
+                fileHandle?.closeFile()
+                fileHandle = nil
+                
+                self?.writeAndCR(message)
+                return
             }
             
-            if let file = self?.getFileHandle() {
-                let printed = message + "\n"
-                printed.appendTo(file: file)
-            }
+            self?.writeAndCR(message)
         })
+    }
+    
+    private func writeAndCR(_ message: String) {
+        if let file = self.getFileHandle() {
+            let printed = message + "\n"
+            printed.appendTo(file: file)
+        }
     }
     
     private func getFileHandle() -> FileHandle? {

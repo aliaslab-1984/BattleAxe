@@ -87,27 +87,17 @@ final class BAFileManager {
         }
         
         let currentDirectory: String
-        let oldFilePath: String
-        let oldFileContents: Data?
         if url.isFileURL {
             // The url is pointing to the current file
             currentDirectory = currentPath.replacingOccurrences(of: filename + Self.fileExtension, with: "")
-            oldFileContents = manager.contents(atPath: currentPath)
-            oldFilePath = currentPath
         } else {
             currentDirectory = currentPath
-            oldFilePath = currentPath + "/" + filename + Self.fileExtension
-            oldFileContents = manager.contents(atPath: oldFilePath)
         }
         // Creates a new file with a unique name
         let newFilename = newName(directory: currentDirectory,
                                   filename: filename,
                                   rotationConfiguration: rotationConfiguration)
         let newPath = currentDirectory + newFilename
-        
-        //If a file already exists at path, this method overwrites the contents of that
-        //file if the current process has the appropriate privileges to do so.
-        
         return .success(newPath)
     }
     
@@ -129,10 +119,6 @@ final class BAFileManager {
             item == currentFile
         }
         
-//        if let index = items.firstIndex(of: currentFile) {
-//            items.remove(at: index)
-//        }
-        
         items.sort()
         
         let filenames = items.compactMap {
@@ -150,7 +136,7 @@ final class BAFileManager {
             }
         }
         
-        guard filenames.count < rotationConfiguration.maxFiles else {
+        guard rotationConfiguration.belowMaxNumberOfFiles(filenames.count) else {
             // We reached the file number limit, so we just rotate without creating a new file.
             rotate(items, currentFile)
             return ""
@@ -194,6 +180,8 @@ final class BAFileManager {
         }
         
         let contents =  Self.fileManager.contents(atPath: currentFilePath)
+        //If a file already exists at path, this method overwrites the contents of that
+        //file if the current process has the appropriate privileges to do so.
         manager.createFile(atPath: first, contents: contents, attributes: nil)
         manager.createFile(atPath: currentFilePath, contents: nil, attributes: nil)
     }

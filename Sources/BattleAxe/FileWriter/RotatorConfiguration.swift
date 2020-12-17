@@ -137,7 +137,7 @@ public final class RotatorConfiguration {
             return false
         }
         
-        return numberOfFiles <= maxFiles
+        return numberOfFiles < maxFiles
     }
     
 }
