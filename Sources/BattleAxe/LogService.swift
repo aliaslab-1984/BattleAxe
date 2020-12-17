@@ -25,7 +25,7 @@ public final class LogService {
               funcName: String = #function,
               line: Int = #line) {
         
-        guard minimumSeverity >= .info, enabled else {
+        guard minimumSeverity <= .info, enabled else {
             return
         }
         
@@ -41,7 +41,7 @@ public final class LogService {
                line: Int = #line,
                funcName: String = #function) {
         
-        guard minimumSeverity >= .debug, enabled  else {
+        guard minimumSeverity <= .debug, enabled  else {
             return
         }
         
@@ -57,7 +57,7 @@ public final class LogService {
                  line: Int = #line,
                  funcName: String = #function) {
         
-        guard minimumSeverity >= .verbose, enabled  else {
+        guard minimumSeverity <= .verbose, enabled  else {
             return
         }
         
@@ -73,7 +73,7 @@ public final class LogService {
                  line: Int = #line,
                  funcName: String = #function) {
         
-        guard minimumSeverity >= .warning, enabled  else {
+        guard minimumSeverity <= .warning, enabled  else {
             return
         }
         
@@ -89,7 +89,7 @@ public final class LogService {
                line: Int = #line,
                funcName: String = #function) {
         
-        guard minimumSeverity >= .error, enabled  else {
+        guard minimumSeverity <= .error, enabled  else {
             return
         }
         

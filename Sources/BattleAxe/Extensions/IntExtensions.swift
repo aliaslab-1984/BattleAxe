@@ -8,16 +8,7 @@
 import Foundation
 
 extension Int {
-    
-    var kFormatted: String {
-        
-        if self >= 1000000 {
-            return String(format: self >= 1000000 ? "%dM" : "%d", (self >= 1000000 ? self/1000000 : self) as CVarArg )
-        } else {
-            return String(format: self >= 1000 ? "%dK" : "%d", (self >= 1000 ? self/1000 : self) as CVarArg )
-        }
-    }
-    
+
     var gigaBytes: Int {
         return Int(UInt(self).gigaBytes)
     }

@@ -71,10 +71,10 @@ public final class StandardLogFileWriter: FileWriter {
                                                     pendingData: message.data(using: .utf8) ?? Data())
             guard check else {
                 _ = BAFileManager
-                                    .standard
-                                    .rotateLogsFile(strongSelf.filePath,
-                                                    filename: strongSelf.filename,
-                                                    rotationConfiguration: rotationConfiguration)
+                            .standard
+                            .rotateLogsFile(strongSelf.filePath,
+                                            filename: strongSelf.filename,
+                                            rotationConfiguration: rotationConfiguration)
                 // We close and make the file handle reference nil, so the getFileHandle() mehod returns a
                 // brand new file.
                 fileHandle?.closeFile()
