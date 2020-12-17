@@ -35,7 +35,7 @@ final class MockedFileManager: BAFileManaged {
         }
     }
     
-    private var files: Set<MockFile> = .init()
+    var files: Set<MockFile> = .init()
     
     init(files: Set<MockFile>) {
         self.files = files

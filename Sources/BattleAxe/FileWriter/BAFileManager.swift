@@ -140,7 +140,7 @@ final class BAFileManager {
             return $0.components(separatedBy: "/").last
         }
         
-        var availableNumbers = filenames.compactMap { (item) -> Int? in
+        let availableNumbers = filenames.compactMap { (item) -> Int? in
             let components = item.components(separatedBy: ".")
             if let last = components.last,
                let intRepresentation = Int(last) {
@@ -177,8 +177,8 @@ final class BAFileManager {
         reversedPaths.reverse()
         // I loop over the reversed file paths, and i overwrite the looped item with the next one on the list.
         for (index, item) in reversedPaths.enumerated() {
-            let nextIndex = storedFilePaths.count - 1 - index
-            guard nextIndex >= 0 else {
+            let nextIndex = index + 1
+            guard nextIndex < reversedPaths.count else {
                 return
             }
             let nextItem = reversedPaths[nextIndex]
