@@ -1,6 +1,7 @@
 # BattleAxe
 
 ![Swift](https://github.com/aliaslab-1984/BattleAxe/workflows/Swift/badge.svg)
+[![SwiftPM compatible](https://img.shields.io/badge/SwiftPM-compatible-brightgreen.svg)](https://swift.org/package-manager/)
 
 Welcome to BattleAxe, an easy and super extstensible Logger for iOS and MacOS.
 
