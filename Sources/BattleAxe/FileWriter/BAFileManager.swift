@@ -13,8 +13,13 @@ final class BAFileManager {
     public static let fileExtension: String = ".logs"
     private let folderName: String
     private static let fileManager = FileManager.default
+    private let manager: BAFileManaged
     
-    init(folderName: String) { self.folderName = folderName }
+    init(folderName: String,
+         fileManager: BAFileManaged = FileManager.default) {
+        self.folderName = folderName
+        self.manager = fileManager
+    }
     
     /// Shared instance that uses the default SubFolder name.
     static let standard = BAFileManager(folderName: "BattleAxeLogs")
@@ -27,7 +32,7 @@ final class BAFileManager {
         let finalPath = path + "/" + folderName
         var isDir: ObjCBool = false
         if Self.fileManager.fileExists(atPath: finalPath,
-                                  isDirectory: &isDir) {
+                                       isDirectory: &isDir) {
             if isDir.boolValue {
             // file exists and is a directory
                 return finalPath
@@ -38,8 +43,8 @@ final class BAFileManager {
         } else {
             // file or directory does not exist
             try Self.fileManager.createDirectory(atPath: finalPath,
-                                            withIntermediateDirectories: false,
-                                            attributes: nil)
+                                                 withIntermediateDirectories: false,
+                                                 attributes: nil)
             return finalPath
         }
     }
@@ -74,7 +79,9 @@ final class BAFileManager {
     /// - PArameter currentPath: The current path where the file is located (could include the file name or not.).
     /// - Returns: The path where the old logs have been saved.
     func rotateLogsFile(_ currentPath: String,
-                        filename: String) -> Result<String, RotationError> {
+                        filename: String,
+                        rotationConfiguration: RotatorConfiguration) -> Result<String, RotationError> {
+        
         guard let url = URL(string: currentPath) else {
             return .failure(.unableToParseURL)
         }
@@ -85,51 +92,109 @@ final class BAFileManager {
         if url.isFileURL {
             // The url is pointing to the current file
             currentDirectory = currentPath.replacingOccurrences(of: filename + Self.fileExtension, with: "")
-            oldFileContents = Self.fileManager.contents(atPath: currentPath)
+            oldFileContents = manager.contents(atPath: currentPath)
             oldFilePath = currentPath
         } else {
             currentDirectory = currentPath
             oldFilePath = currentPath + "/" + filename + Self.fileExtension
-            oldFileContents = Self.fileManager.contents(atPath: oldFilePath)
+            oldFileContents = manager.contents(atPath: oldFilePath)
         }
-        // Creates a new file with a unique name, we create the name using an hash of the current file.
-        let newFilename: String
-        if let contents = oldFileContents {
-            if #available(iOS 13.0, *) {
-                newFilename = SHA256.hash(data: contents).hexString
-            } else {
-                var hasher = Hasher()
-                hasher.combine(contents)
-                let finalValue = hasher.finalize()
-                newFilename = "\(finalValue)"
-            }
-            
-        } else {
-            // For some reason the old file is empty.. Strange
-            newFilename = "oldLogs"
-        }
-        let newPath = currentDirectory + newFilename + Self.fileExtension
+        // Creates a new file with a unique name
+        let newFilename = newName(directory: currentDirectory,
+                                  filename: filename,
+                                  rotationConfiguration: rotationConfiguration)
+        let newPath = currentDirectory + newFilename
         
         //If a file already exists at path, this method overwrites the contents of that
         //file if the current process has the appropriate privileges to do so.
-        Self.fileManager.createFile(atPath: newPath, contents: oldFileContents, attributes: nil)
-        Self.fileManager.createFile(atPath: oldFilePath, contents: nil, attributes: nil)
+        
         return .success(newPath)
     }
     
-}
-
-#if canImport(CryptoKit)
-import CryptoKit
-
-@available(iOS 13.0, *)
-extension Digest {
-    var bytes: [UInt8] { Array(makeIterator()) }
-    var data: Data { Data(bytes) }
-
-    var hexString: String {
-        bytes.map { String(format: "%02X", $0) }.joined()
+    /// Creates a new file if needed, and rotates the current logs.
+    /// - Parameters:
+    ///   - directory: The full path where the logs are stored.
+    ///   - filename: The filename for the current log file. (without extension)
+    ///   - rotationConfiguration: The rotation configuration.
+    /// - Returns: returns the filename created.
+    private func newName(directory: String,
+                         filename: String,
+                         rotationConfiguration: RotatorConfiguration) -> String {
+        let currentFile = directory + "/" + filename + Self.fileExtension
+        guard var items = try? manager.contentsOfDirectory(atPath: directory) else {
+            return filename + Self.fileExtension
+        }
+        
+        items.removeAll { (item) -> Bool in
+            item == currentFile
+        }
+        
+//        if let index = items.firstIndex(of: currentFile) {
+//            items.remove(at: index)
+//        }
+        
+        items.sort()
+        
+        let filenames = items.compactMap {
+            // We extract the filename from each path.
+            return $0.components(separatedBy: "/").last
+        }
+        
+        var availableNumbers = filenames.compactMap { (item) -> Int? in
+            let components = item.components(separatedBy: ".")
+            if let last = components.last,
+               let intRepresentation = Int(last) {
+                return intRepresentation
+            } else {
+                return nil
+            }
+        }
+        
+        guard filenames.count < rotationConfiguration.maxFiles else {
+            // We reached the file number limit, so we just rotate without creating a new file.
+            rotate(items, currentFile)
+            return ""
+        }
+        
+        let newFilename: String
+        if let last = availableNumbers.last {
+            newFilename = filename + "/" + Self.fileExtension + "." + "\(last + 1)"
+        } else {
+            newFilename = filename + "/" + Self.fileExtension
+        }
+        
+        items.append(directory + "/" + newFilename)
+        rotate(items, currentFile)
+        
+        return newFilename
+    }
+    
+    private func rotate(_ storedFilePaths: [String],
+                        _ currentFilePath: String) {
+        
+        var reversedPaths = storedFilePaths
+        reversedPaths.sort()
+        reversedPaths.reverse()
+        // I loop over the reversed file paths, and i overwrite the looped item with the next one on the list.
+        for (index, item) in reversedPaths.enumerated() {
+            let nextIndex = storedFilePaths.count - 1 - index
+            guard nextIndex >= 0 else {
+                return
+            }
+            let nextItem = reversedPaths[nextIndex]
+            
+            let oldFileContents = manager.contents(atPath: nextItem)
+            
+            // I overwrite the current item with the next item in the paths list.
+            manager.createFile(atPath: item, contents: oldFileContents, attributes: nil)
+        }
+        
+        guard let first = storedFilePaths.first else {
+            return
+        }
+        
+        let contents =  Self.fileManager.contents(atPath: currentFilePath)
+        manager.createFile(atPath: first, contents: contents, attributes: nil)
+        manager.createFile(atPath: currentFilePath, contents: nil, attributes: nil)
     }
 }
-
-#endif

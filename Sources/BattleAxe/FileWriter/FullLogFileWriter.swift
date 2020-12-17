@@ -9,6 +9,8 @@ import Foundation
 
 public final class StandardLogFileWriter: FileWriter {
     
+    public var rotationConfiguration: RotatorConfiguration
+    
     private var filePath: String
     private var filename: String
     private var fileHandle: FileHandle?
@@ -16,12 +18,14 @@ public final class StandardLogFileWriter: FileWriter {
     private static let queueName: String = "FullLogFileWriter"
     
     public init(filename: String,
-                appGroup: String? = nil) {
+                appGroup: String? = nil,
+                rotationConfiguration: RotatorConfiguration = .standard) {
         
         guard let url = BAFileManager.standard.baseURLFor(appGroup: appGroup) else {
             fatalError("Unable to get logs url.")
         }
         
+        self.rotationConfiguration = rotationConfiguration
         self.filename = filename
         self.queue = DispatchQueue(label: Self.queueName, qos: .utility)
         do {
@@ -57,9 +61,23 @@ public final class StandardLogFileWriter: FileWriter {
     public func write(_ message: String) {
         queue.sync(execute: { [weak self] in
             
-            //let handler = RotatatingLogHandler()
+            guard let strongSelf = self else {
+                return
+            }
+            
             // We need to check if the rotator's check passes before writing.
-            //_ = handler.check(self?.filePath ?? "", pendingData: message.data(using: .utf8) ?? Data())
+            let check = rotationConfiguration.check(strongSelf.filePath,
+                                                    strongSelf.filename,
+                                                    pendingData: message.data(using: .utf8) ?? Data())
+            
+            if !check {
+                // We need to rotate the current file.
+                let newFileName = BAFileManager
+                                    .standard
+                                    .rotateLogsFile(strongSelf.filePath,
+                                                    filename: strongSelf.filename,
+                                                    rotationConfiguration: rotationConfiguration)
+            }
             
             if let file = self?.getFileHandle() {
                 let printed = message + "\n"

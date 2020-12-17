@@ -1,8 +1,8 @@
 //
-//  File.swift
+//  RotatorTests.swift
 //  
 //
-//  Created by Francesco Bianco on 15/12/2020.
+//  Created by Francesco Bianco on 17/12/2020.
 //
 
 import XCTest
@@ -10,72 +10,29 @@ import XCTest
 
 final class RotatorTests: XCTestCase {
     
-    func sizeLimitNotSetTest() {
-        let pendingData = Data(count: 30.kiloBytes)
-        let fileSize = UInt64(780)
-        let rotator = RotatatingLogHandler(maxSize: 0, maxAge: 0)
+    func testSomething() {
+        let basePath = "ciao/Ciao/cIaO/Logs"
+        let mockManager = MockedFileManager(files: .init(arrayLiteral:
+                                                            MockedFileManager.MockFile(path: basePath + "/ciao.logs", contents: "Ciao ciao, siamo dei logs!"),
+                                                            MockedFileManager.MockFile(path: basePath + "/ciao.logs.1", contents: "Ciao ciao, siamo dei logs anche noi!"),
+                                                            MockedFileManager.MockFile(path: basePath + "/ciao.logs.2", contents: "Ciao ciao, siamo dei logs anche voi!")
+        ))
         
-        let result = rotator.doesItFits(fileSize, pendingData.count)
+        let myManager = BAFileManager(folderName: "Logs", fileManager: mockManager)
+        let result = myManager.rotateLogsFile(basePath,
+                                 filename: "ciao",
+                                 rotationConfiguration: try! .init(maxSize: 0, maxAge: 0, maxFiles: 2))
         
-        XCTAssert(result)
+        switch result {
+        case .success(let value):
+            print(value)
+        default:
+            XCTFail()
+        }
+        
     }
     
-    func belowMaxSizeTest() {
-        let pendingData = Data(count: 30.kiloBytes)
-        let fileSize = UInt64(780)
-        let rotator = RotatatingLogHandler(maxSize: 50.kiloBytes, maxAge: 0)
-        
-        let result = rotator.doesItFits(fileSize, pendingData.count)
-        
-        XCTAssert(result)
-    }
-    
-    func overMaxSizeTest() {
-        let pendingData = Data(count: 70.kiloBytes)
-        let fileSize = UInt64(780)
-        let rotator = RotatatingLogHandler(maxSize: 50.kiloBytes, maxAge: 0)
-        
-        let result = rotator.doesItFits(fileSize, pendingData.count)
-        
-        XCTAssertFalse(result)
-    }
-    
-    func maxAgeNotSetTest() {
-        let rotator = RotatatingLogHandler(maxSize: 0, maxAge: 0)
-        
-        let fakeFileCreationDate = Date().addingTimeInterval(-14.0.daysToSeconds)
-        
-        let result = rotator.isSmaller(than:fakeFileCreationDate)
-        
-        XCTAssert(result)
-    }
-    
-    func olderCreationDateTest() {
-        let rotator = RotatatingLogHandler(maxSize: 0, maxAge: 7.0.daysToSeconds)
-        
-        let fakeFileCreationDate = Date().addingTimeInterval(-14.0.daysToSeconds)
-        
-        let result = rotator.isSmaller(than: fakeFileCreationDate)
-        
-        XCTAssertFalse(result)
-    }
-    
-    func newerCreationDateTest() {
-        let rotator = RotatatingLogHandler(maxSize: 0, maxAge: 7.0.daysToSeconds)
-        
-        let fakeFileCreationDate = Date().addingTimeInterval(-24.0.minutesToSeconds)
-        
-        let result = rotator.isSmaller(than:fakeFileCreationDate)
-        
-        XCTAssert(result)
-    }
-
     static var allTests = [
-        ("sizeLimitNotSetTest", sizeLimitNotSetTest),
-        ("belowMaxSizeTest", belowMaxSizeTest),
-        ("overMaxSizeTest", overMaxSizeTest),
-        ("olderCreationDateTest", olderCreationDateTest),
-        ("newerCreationDateTest", newerCreationDateTest),
-        ("maxAgeNotSetTest", maxAgeNotSetTest)
+        ("testSomething", testSomething)
     ]
 }

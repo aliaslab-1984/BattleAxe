@@ -11,6 +11,8 @@ import Foundation
 /// `message [number of times]\n`
 public final class BriefLogFileWriter: FileWriter {
     
+    public var rotationConfiguration: RotatorConfiguration
+    
     private var filePath: String
     private var fileHandle: FileHandle?
     private var queue: DispatchQueue
@@ -21,11 +23,13 @@ public final class BriefLogFileWriter: FileWriter {
     private var counter: Int = 1
     
     public init(filename: String,
-                appGroup: String? = nil) {
+                appGroup: String? = nil,
+                rotationConfiguration: RotatorConfiguration = .standard) {
         
         guard let url = BAFileManager.standard.baseURLFor(appGroup: appGroup) else {
             fatalError("Unable to get logs url.")
         }
+        self.rotationConfiguration = rotationConfiguration
         self.filename = filename
         self.queue = DispatchQueue(label: Self.queueName, qos: .utility)
         do {
