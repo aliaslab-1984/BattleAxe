@@ -76,29 +76,21 @@ final class BAFileManager {
     /// Utility method that helps you to rotate the current log file into another.
     /// Specifically it moves the current logs file into another file, and emptys the current log file.
     /// - Parameter filename: The current log file name that needs to be rotated. (without file extension.)
-    /// - PArameter currentPath: The current path where the file is located (could include the file name or not.).
+    /// - Parameter currentPath: The current path where the file is located. Must be the filepath with the filename and extension.
     /// - Returns: The path where the old logs have been saved.
     func rotateLogsFile(_ currentPath: String,
                         filename: String,
-                        rotationConfiguration: RotatorConfiguration) -> Result<String, RotationError> {
+                        rotationConfiguration: RotatorConfiguration) -> String {
         
-        guard let url = URL(string: currentPath) else {
-            return .failure(.unableToParseURL)
-        }
-        
-        let currentDirectory: String
-        if url.isFileURL {
             // The url is pointing to the current file
-            currentDirectory = currentPath.replacingOccurrences(of: filename + Self.fileExtension, with: "")
-        } else {
-            currentDirectory = currentPath
-        }
+        let currentDirectory = currentPath.replacingOccurrences(of: filename + Self.fileExtension, with: "")
+        
         // Creates a new file with a unique name
         let newFilename = newName(directory: currentDirectory,
                                   filename: filename,
                                   rotationConfiguration: rotationConfiguration)
         let newPath = currentDirectory + newFilename
-        return .success(newPath)
+        return newPath
     }
     
     /// Creates a new file if needed, and rotates the current logs.

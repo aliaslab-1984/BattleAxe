@@ -19,18 +19,13 @@ final class RotatorTests: XCTestCase {
         let mockManager = MockedFileManager(files: .init( initialFiles))
         
         let myManager = BAFileManager(folderName: "Logs", fileManager: mockManager)
-        let result = myManager.rotateLogsFile(basePath,
+        _ = myManager.rotateLogsFile(basePath,
                                  filename: "ciao",
                                  rotationConfiguration: try! .init(maxSize: 0, maxAge: 0, maxFiles: 2))
         
-        switch result {
-        case .success:
-            let newValues = mockManager.files.shuffled()
-            XCTAssert(initialFiles != newValues)
-        default:
-            XCTFail()
-        }
         
+        let newValues = mockManager.files.shuffled()
+        XCTAssert(initialFiles != newValues)
     }
     
     func testRotateFileIsTooHeavy() {
@@ -44,15 +39,11 @@ final class RotatorTests: XCTestCase {
         XCTAssertFalse(configuration.doesItFits(UInt64(initialFiles.first!.dataContents!.count), 1.kiloBytes))
         
         let myManager = BAFileManager(folderName: "Logs", fileManager: mockManager)
-        let result = myManager.rotateLogsFile(basePath,
+        _ = myManager.rotateLogsFile(basePath,
                                               filename: "ciao",
                                               rotationConfiguration: configuration)
-        switch result {
-        case .success:
-            XCTAssert(initialFiles.count < mockManager.files.count)
-        default:
-            XCTFail()
-        }
+        
+        XCTAssert(initialFiles.count < mockManager.files.count)
     }
     
     func testRotateFileIsTooOld() {
@@ -69,12 +60,7 @@ final class RotatorTests: XCTestCase {
         let result = myManager.rotateLogsFile(basePath,
                                               filename: "ciao",
                                               rotationConfiguration: configuration)
-        switch result {
-        case .success:
-            XCTAssert(initialFiles.count < mockManager.files.count)
-        default:
-            XCTFail()
-        }
+        XCTAssert(initialFiles.count < mockManager.files.count)
     }
     
     static var allTests = [
