@@ -186,10 +186,6 @@ final class BAFileManager {
             return []
         }
         
-        items.removeAll { (item) -> Bool in
-            item == filename + Self.fileExtension
-        }
-        
         var failingItems: [String] = []
         items.forEach { (itemToBeRemoved) in
             let path = directory + itemToBeRemoved
