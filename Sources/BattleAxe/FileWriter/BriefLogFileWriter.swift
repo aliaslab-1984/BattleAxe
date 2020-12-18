@@ -18,22 +18,25 @@ public final class BriefLogFileWriter: FileWriter {
     private var queue: DispatchQueue
     private static let queueName: String = "SmallLogFileWriter"
     private var filename: String
+    private let manager: BAFileManager
     
     private var lastMessage: String?
     private var counter: Int = 1
     
     public init(filename: String,
                 appGroup: String? = nil,
-                rotationConfiguration: RotatorConfiguration = .standard) {
+                rotationConfiguration: RotatorConfiguration = .standard,
+                fileManager: BAFileManager = .default) {
         
-        guard let url = BAFileManager.standard.baseURLFor(appGroup: appGroup) else {
+        guard let url = fileManager.baseURLFor(appGroup: appGroup) else {
             fatalError("Unable to get logs url.")
         }
+        manager = fileManager
         self.rotationConfiguration = rotationConfiguration
         self.filename = filename
         self.queue = DispatchQueue(label: Self.queueName, qos: .utility)
         do {
-            guard let path = try BAFileManager.standard.createLogsFolderIfNeeded(url.path) else {
+            guard let path = try manager.createLogsFolderIfNeeded(url.path) else {
                 fatalError("Unable to create a subdirectory.")
             }
             self.filePath = path + "/" + filename + BAFileManager.fileExtension
@@ -73,9 +76,7 @@ public final class BriefLogFileWriter: FileWriter {
                                                         pendingData: message.data(using: .utf8) ?? Data())
                 
                 guard check else {
-                    _ = BAFileManager
-                                .standard
-                                .rotateLogsFile(filePath,
+                    _ = manager.rotateLogsFile(filePath,
                                                 filename: filename,
                                                 rotationConfiguration: rotationConfiguration)
                     // We close and make the file handle reference nil, so the getFileHandle() mehod returns a
@@ -108,7 +109,7 @@ public final class BriefLogFileWriter: FileWriter {
     }
     
     public func deleteLogs() {
-        _ = BAFileManager.standard.deleteAllLogs(filePath: self.filePath, filename: filename)
+        _ = manager.deleteAllLogs(filePath: self.filePath, filename: filename)
     }
     
     private func getFileHandle() -> FileHandle? {

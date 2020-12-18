@@ -16,20 +16,23 @@ public final class StandardLogFileWriter: FileWriter {
     private var fileHandle: FileHandle?
     private var queue: DispatchQueue
     private static let queueName: String = "FullLogFileWriter"
+    private let manager: BAFileManager
     
     public init(filename: String,
                 appGroup: String? = nil,
-                rotationConfiguration: RotatorConfiguration = .standard) {
+                rotationConfiguration: RotatorConfiguration = .standard,
+                fileManager: BAFileManager = .default) {
         
-        guard let url = BAFileManager.standard.baseURLFor(appGroup: appGroup) else {
+        guard let url = fileManager.baseURLFor(appGroup: appGroup) else {
             fatalError("Unable to get logs url.")
         }
         
+        self.manager = fileManager
         self.rotationConfiguration = rotationConfiguration
         self.filename = filename
         self.queue = DispatchQueue(label: Self.queueName, qos: .utility)
         do {
-            guard let path = try BAFileManager.standard.createLogsFolderIfNeeded(url.path) else {
+            guard let path = try manager.createLogsFolderIfNeeded(url.path) else {
                 fatalError("Unable to create a subdirectory.")
             }
             self.filePath = path + "/" + filename + BAFileManager.fileExtension
@@ -70,11 +73,9 @@ public final class StandardLogFileWriter: FileWriter {
                                                     strongSelf.filename,
                                                     pendingData: message.data(using: .utf8) ?? Data())
             guard check else {
-                _ = BAFileManager
-                            .standard
-                            .rotateLogsFile(strongSelf.filePath,
-                                            filename: strongSelf.filename,
-                                            rotationConfiguration: rotationConfiguration)
+                _ = manager.rotateLogsFile(strongSelf.filePath,
+                                           filename: strongSelf.filename,
+                                           rotationConfiguration: rotationConfiguration)
                 // We close and make the file handle reference nil, so the getFileHandle() mehod returns a
                 // brand new file.
                 fileHandle?.closeFile()
@@ -96,7 +97,7 @@ public final class StandardLogFileWriter: FileWriter {
     }
     
     public func deleteLogs() {
-        _ = BAFileManager.standard.deleteAllLogs(filePath: self.filePath, filename: filename)
+        _ = manager.deleteAllLogs(filePath: self.filePath, filename: filename)
     }
     
     private func getFileHandle() -> FileHandle? {

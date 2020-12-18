@@ -10,9 +10,16 @@ import BattleAxe
 
 final class MockFileWriter: FileWriter {
     
-    var rotationConfiguration: RotatorConfiguration = .none
+    var rotationConfiguration: RotatorConfiguration
     
     var lastPrintedMessage: String?
+    
+    init(filename: String,
+         appGroup: String?,
+         rotationConfiguration: RotatorConfiguration = .none,
+         fileManager: BAFileManager) {
+        self.rotationConfiguration = rotationConfiguration
+    }
     
     func write(_ message: String) {
         lastPrintedMessage = message

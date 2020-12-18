@@ -8,7 +8,7 @@
 import Foundation
 
 /// Helper class that lets you manage URLs and folders where all the logs will be stored.
-final class BAFileManager {
+public final class BAFileManager {
     
     public static let fileExtension: String = ".logs"
     private let folderName: String
@@ -22,7 +22,7 @@ final class BAFileManager {
     }
     
     /// Shared instance that uses the default SubFolder name.
-    static let standard = BAFileManager(folderName: "BattleAxeLogs")
+    public static let `default` = BAFileManager(folderName: "BattleAxeLogs")
     
     /// Tries to create a subfolder given a path.
     /// - Parameter path: The base path where you want to create a folder.
