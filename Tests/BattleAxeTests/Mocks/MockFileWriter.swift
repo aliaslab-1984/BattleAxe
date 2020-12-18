@@ -18,4 +18,8 @@ final class MockFileWriter: FileWriter {
         lastPrintedMessage = message
     }
     
+    func deleteLogs() {
+        
+    }
+    
 }

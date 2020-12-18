@@ -39,8 +39,8 @@ final class RotatorTests: XCTestCase {
         
         let myManager = BAFileManager(folderName: "Logs", fileManager: mockManager)
         _ = myManager.rotateLogsFile(basePath,
-                                              filename: "ciao",
-                                              rotationConfiguration: configuration)
+                                     filename: "ciao",
+                                     rotationConfiguration: configuration)
         
         XCTAssert(initialFiles.count < mockManager.files.count)
     }

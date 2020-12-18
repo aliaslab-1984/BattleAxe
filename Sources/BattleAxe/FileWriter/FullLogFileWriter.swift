@@ -95,6 +95,10 @@ public final class StandardLogFileWriter: FileWriter {
         }
     }
     
+    public func deleteLogs() {
+        _ = BAFileManager.standard.deleteAllLogs(filePath: self.filePath, filename: filename)
+    }
+    
     private func getFileHandle() -> FileHandle? {
         if fileHandle == nil {
             let fileManager = FileManager.default

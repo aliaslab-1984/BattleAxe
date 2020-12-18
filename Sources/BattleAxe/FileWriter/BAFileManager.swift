@@ -178,4 +178,29 @@ final class BAFileManager {
         manager.createFile(atPath: currentDirectory + first, contents: contents, attributes: nil)
         manager.createFile(atPath: currentFilePath, contents: nil, attributes: nil)
     }
+    
+    func deleteAllLogs(filePath: String,
+                       filename: String) -> [String] {
+        let directory = filePath.replacingOccurrences(of: filename + Self.fileExtension, with: "")
+        guard var items = try? manager.contentsOfDirectory(atPath: directory) else {
+            return []
+        }
+        
+        items.removeAll { (item) -> Bool in
+            item == filename + Self.fileExtension
+        }
+        
+        var failingItems: [String] = []
+        items.forEach { (itemToBeRemoved) in
+            let path = directory + itemToBeRemoved
+            do {
+            try FileManager.default.removeItem(atPath: path)
+            } catch _ {
+                print("Error")
+                failingItems.append(path)
+            }
+        }
+        
+        return failingItems
+    }
 }

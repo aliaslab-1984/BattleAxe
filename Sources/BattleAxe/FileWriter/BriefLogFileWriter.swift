@@ -17,7 +17,7 @@ public final class BriefLogFileWriter: FileWriter {
     private var fileHandle: FileHandle?
     private var queue: DispatchQueue
     private static let queueName: String = "SmallLogFileWriter"
-    private var filename: String?
+    private var filename: String
     
     private var lastMessage: String?
     private var counter: Int = 1
@@ -68,6 +68,28 @@ public final class BriefLogFileWriter: FileWriter {
             }
             
             guard let unMessage = lastMessage else {
+                let check = rotationConfiguration.check(filePath,
+                                                        filename,
+                                                        pendingData: message.data(using: .utf8) ?? Data())
+                
+                guard check else {
+                    _ = BAFileManager
+                                .standard
+                                .rotateLogsFile(filePath,
+                                                filename: filename,
+                                                rotationConfiguration: rotationConfiguration)
+                    // We close and make the file handle reference nil, so the getFileHandle() mehod returns a
+                    // brand new file.
+                    fileHandle?.closeFile()
+                    fileHandle = nil
+                    
+                    if let handle = getFileHandle() {
+                        message.appendTo(file: handle)
+                        strongSelf.lastMessage = message
+                        strongSelf.counter = 1
+                    }
+                    return
+                }
                 message.appendTo(file: file)
                 strongSelf.lastMessage = message
                 strongSelf.counter = 1
@@ -83,6 +105,10 @@ public final class BriefLogFileWriter: FileWriter {
                 message.appendTo(file: file)
             }
         })
+    }
+    
+    public func deleteLogs() {
+        _ = BAFileManager.standard.deleteAllLogs(filePath: self.filePath, filename: filename)
     }
     
     private func getFileHandle() -> FileHandle? {
