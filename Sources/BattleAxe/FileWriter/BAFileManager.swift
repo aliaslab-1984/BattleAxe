@@ -136,9 +136,9 @@ final class BAFileManager {
         
         let newFilename: String
         if let last = availableNumbers.last {
-            newFilename = filename + "/" + Self.fileExtension + "." + "\(last + 1)"
+            newFilename = filename + Self.fileExtension + "." + "\(last + 1)"
         } else {
-            newFilename = filename + "/" + Self.fileExtension + ".1"
+            newFilename = filename + Self.fileExtension + ".1"
         }
         
         items.append(directory + "/" + newFilename)
