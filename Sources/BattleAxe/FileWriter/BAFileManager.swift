@@ -102,7 +102,7 @@ final class BAFileManager {
     private func newName(directory: String,
                          filename: String,
                          rotationConfiguration: RotatorConfiguration) -> String {
-        let currentFile = directory + "/" + filename + Self.fileExtension
+        let currentFile = directory + filename + Self.fileExtension
         guard var items = try? manager.contentsOfDirectory(atPath: directory) else {
             return filename + Self.fileExtension
         }
@@ -138,7 +138,7 @@ final class BAFileManager {
         if let last = availableNumbers.last {
             newFilename = filename + "/" + Self.fileExtension + "." + "\(last + 1)"
         } else {
-            newFilename = filename + "/" + Self.fileExtension
+            newFilename = filename + "/" + Self.fileExtension + ".1"
         }
         
         items.append(directory + "/" + newFilename)
