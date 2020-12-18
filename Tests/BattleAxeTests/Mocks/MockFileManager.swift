@@ -84,7 +84,10 @@ final class MockedFileManager: BAFileManaged {
     
     func contentsOfDirectory(atPath path: String) throws -> [String] {
         return files.compactMap { (file) -> String? in
-            return file.path
+            guard let name = file.path.components(separatedBy: "/").last else {
+                return ""
+            }
+            return name
         }
     }
     

@@ -108,7 +108,7 @@ final class BAFileManager {
         }
         
         items.removeAll { (item) -> Bool in
-            item == currentFile
+            item == filename + Self.fileExtension
         }
         
         items.sort()
@@ -130,7 +130,7 @@ final class BAFileManager {
         
         guard rotationConfiguration.belowMaxNumberOfFiles(filenames.count) else {
             // We reached the file number limit, so we just rotate without creating a new file.
-            rotate(items, currentFile)
+            rotate(items, currentFile, directory)
             return ""
         }
         
@@ -141,14 +141,15 @@ final class BAFileManager {
             newFilename = filename + Self.fileExtension + ".1"
         }
         
-        items.append(directory + "/" + newFilename)
-        rotate(items, currentFile)
+        items.append(newFilename)
+        rotate(items, currentFile, directory)
         
         return newFilename
     }
     
     private func rotate(_ storedFilePaths: [String],
-                        _ currentFilePath: String) {
+                        _ currentFilePath: String,
+                        _ currentDirectory: String) {
         
         var reversedPaths = storedFilePaths
         reversedPaths.sort()
@@ -164,7 +165,7 @@ final class BAFileManager {
             let oldFileContents = manager.contents(atPath: nextItem)
             
             // I overwrite the current item with the next item in the paths list.
-            manager.createFile(atPath: item, contents: oldFileContents, attributes: nil)
+            manager.createFile(atPath: currentDirectory + item, contents: oldFileContents, attributes: nil)
         }
         
         guard let first = storedFilePaths.first else {
@@ -174,7 +175,7 @@ final class BAFileManager {
         let contents =  Self.fileManager.contents(atPath: currentFilePath)
         //If a file already exists at path, this method overwrites the contents of that
         //file if the current process has the appropriate privileges to do so.
-        manager.createFile(atPath: first, contents: contents, attributes: nil)
+        manager.createFile(atPath: currentDirectory + first, contents: contents, attributes: nil)
         manager.createFile(atPath: currentFilePath, contents: nil, attributes: nil)
     }
 }
