@@ -87,10 +87,10 @@ public final class RotatorConfiguration {
         }
         
         let fits = doesItFits(fileSize, pendingData.count)
-        let smaller = isOlder(than: age)
+        let older = !isOlder(than: age)
         let excedes = belowMaxNumberOfFiles(items.count - 1)
         
-        return fits && smaller && excedes
+        return fits && older && excedes
     }
     
     /// Determines if the pending data fits the **maxSize** requirements.

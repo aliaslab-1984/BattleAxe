@@ -24,3 +24,22 @@ Once you're done with the configuration, you can start logging by calling:
 ``` swift
 LogService.shared.debug("Your first log!")
 ```
+
+--------
+
+BattleAxe offers a LogRotation feature built into any FileWriter. Logs could be rotated following three main criteria:
+
+- Log Size;
+- Log file Age;
+- Number of files.
+
+You can easilly specify each of these properties when you initialize your custom `RotatorConfiguration` instance: 
+
+```swift
+RotatorConfiguration(maxSize: 10.kiloBytes, maxFiles: 2) 
+// keeps on logging on a file until it excedes the 10 kiloBytes threshold.
+// rotates two backup files, plus the current logging file.
+```
+
+To make things easier BattleAxe offers some cool extensions to make your code even more readable, such as from days/hours to seconds, from int to kilo/Mega/Gigabytes.
+
