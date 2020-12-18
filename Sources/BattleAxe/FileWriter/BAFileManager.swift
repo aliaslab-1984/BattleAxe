@@ -158,7 +158,7 @@ final class BAFileManager {
         for (index, item) in reversedPaths.enumerated() {
             let nextIndex = index + 1
             guard nextIndex < reversedPaths.count else {
-                return
+                break
             }
             let nextItem = reversedPaths[nextIndex]
             
