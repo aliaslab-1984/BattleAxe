@@ -62,9 +62,43 @@ final class RotatorTests: XCTestCase {
         XCTAssert(initialFiles.count < mockManager.files.count)
     }
     
+    func testEmptyFolder() {
+        let basePath = "This/is/a/Path/Logs/"
+        let initialFiles = [MockedFileManager.MockFile(path: basePath + "ciao.logs", bytes: 1.megaBytes)
+        ]
+        let mockManager = MockedFileManager(files: .init( initialFiles))
+        let configuration = try! RotatorConfiguration(maxSize: 0, maxAge: 1.0.hoursToSeconds, maxFiles: 2)
+        
+        XCTAssert(configuration.isOlder(than: Date().addingTimeInterval(0.5.hoursToSeconds)))
+        
+        let myManager = BAFileManager(folderName: "Logs", fileManager: mockManager)
+        _ = myManager.rotateLogsFile(basePath,
+                                              filename: "ciao",
+                                              rotationConfiguration: configuration)
+        XCTAssert(mockManager.files.count == 2)
+    }
+    
+    func testDeleteAllSuccedes() {
+        let basePath = "This/is/a/Path/Logs/"
+        let initialFiles = [MockedFileManager.MockFile(path: basePath + "ciao.logs", bytes: 1.megaBytes),
+                            MockedFileManager.MockFile(path: basePath + "ciao.logs.1", bytes: 1.megaBytes),
+                            MockedFileManager.MockFile(path: basePath + "ciao.logs.2", bytes: 1.megaBytes),
+                            MockedFileManager.MockFile(path: basePath + "ciao.logs.3", bytes: 1.megaBytes)
+        ]
+        let mockManager = MockedFileManager(files: .init( initialFiles))
+        let myManager = BAFileManager(folderName: "Logs", fileManager: mockManager)
+        let failing = myManager.deleteAllLogs(filePath: initialFiles[0].path, filename: "ciao")
+        
+        XCTAssert(failing.isEmpty)
+    }
+    
+    
+    
     static var allTests = [
         ("testRotateFileAreTooMuch", testRotateFileAreTooMuch),
         ("testRotateFileIsTooHeavy", testRotateFileIsTooHeavy),
-        ("testRotateFileIsTooOld", testRotateFileIsTooOld)
+        ("testRotateFileIsTooOld", testRotateFileIsTooOld),
+        ("testEmptyFolder", testEmptyFolder),
+        ("testDeleteAllSuccedes", testDeleteAllSuccedes)
     ]
 }

@@ -8,12 +8,16 @@
 import Foundation
 import os.log
 
+@available(iOS 10.0, macOS 10.12, tvOS 10.0, watchOS 3.0, *)
 public struct OSLogProvider: LogProvider {
     
     private var dateFormatter: DateFormatter
+    private var subsystem: String
     
-    public init(dateFormatter: DateFormatter) {
+    public init(dateFormatter: DateFormatter,
+                subsystem: String = "") {
         self.dateFormatter = dateFormatter
+        self.subsystem = subsystem
     }
     
     public func log(_ severity: LogSeverity,
@@ -21,8 +25,9 @@ public struct OSLogProvider: LogProvider {
                     file: String,
                     function: String,
                     line: Int) {
-        // TODO: Need to take a closer look to this one.
-        //os_log(event.toOSLogLevel(), message)
+        let log = OSLog(subsystem: self.subsystem, category: "BattleAxe")
+        let type = severity.toOSLogLevel()
+        os_log("%{public}@", log: log, type: type, message)
     }
     
 }

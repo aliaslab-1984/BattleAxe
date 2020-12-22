@@ -1,0 +1,43 @@
+disabled_rules:
+  - file_length
+  - line_length
+  - unused_optional_binding
+  - identifier_name
+  - type_name
+opt_in_rules:
+  - contains_over_first_not_nil
+  - empty_count
+  - empty_string
+  - first_where
+  - force_unwrapping
+  - last_where
+  - modifier_order
+  - sorted_first_last
+excluded:
+
+deployment_target:
+  iOS_deployment_target: "13.0"
+
+type_body_length:
+  warning: 200
+
+function_body_length:
+  warning: 40
+
+trailing_whitespace:
+  ignores_empty_lines: true
+  ignores_comments: true
+
+identifier_name:
+  excluded:
+    - cc
+    - externalAuthenticatePayloadGenerationFailure
+    - i
+    - id
+    - iv
+    - j
+    - k
+    - m
+    - n
+    - x
+    - y

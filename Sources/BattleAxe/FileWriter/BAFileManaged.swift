@@ -13,6 +13,7 @@ public protocol BAFileManaged {
     @discardableResult
     func createFile(atPath path: String, contents data: Data?, attributes attr: [FileAttributeKey : Any]?) -> Bool
     func contentsOfDirectory(atPath path: String) throws -> [String]
+    func removeItem(atPath path: String) throws
 }
 
 

@@ -91,4 +91,17 @@ final class MockedFileManager: BAFileManaged {
         }
     }
     
+    enum ManagerError: Error {
+        case fileNotFound
+    }
+    
+    func removeItem(atPath path: String) throws {
+        guard let item = files.first(where: { (file) -> Bool in
+            file.path == path
+        }) else {
+            throw ManagerError.fileNotFound
+        }
+        
+        files.remove(item)
+    }
 }

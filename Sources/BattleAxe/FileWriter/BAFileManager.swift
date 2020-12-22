@@ -182,7 +182,7 @@ public final class BAFileManager {
     func deleteAllLogs(filePath: String,
                        filename: String) -> [String] {
         let directory = filePath.replacingOccurrences(of: filename + Self.fileExtension, with: "")
-        guard var items = try? manager.contentsOfDirectory(atPath: directory) else {
+        guard let items = try? manager.contentsOfDirectory(atPath: directory) else {
             return []
         }
         
@@ -190,7 +190,7 @@ public final class BAFileManager {
         items.forEach { (itemToBeRemoved) in
             let path = directory + itemToBeRemoved
             do {
-            try FileManager.default.removeItem(atPath: path)
+            try manager.removeItem(atPath: path)
             } catch _ {
                 print("Error")
                 failingItems.append(path)
