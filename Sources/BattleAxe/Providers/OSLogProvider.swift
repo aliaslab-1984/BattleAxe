@@ -27,7 +27,7 @@ public struct OSLogProvider: LogProvider {
                     line: Int) {
         let log = OSLog(subsystem: self.subsystem, category: "BattleAxe")
         let type = severity.toOSLogLevel()
-        os_log("%{public}@", log: log, type: type, message)
+        os_log("%{public}@", log: log, type: type, severity.emoji + " " + message)
     }
     
 }
