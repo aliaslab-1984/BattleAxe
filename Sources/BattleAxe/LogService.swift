@@ -16,10 +16,18 @@ public final class LogService {
         LogService.providers = providers
     }
     
+    /// Adds a new LogProvider object to the list.
     public static func register(provider: LogProvider) {
         providers.append(provider)
     }
     
+    /// Convenience method. It calls verbose(), debug() ... depending on the `LogSeverity` specified at the begining.
+    /// - Parameters:
+    ///   - severity: The log's severity.
+    ///   - object: The message that should be displayed.
+    ///   - filename: The filename
+    ///   - funcName: The method name.
+    ///   - line: The file's line.
     public func log(_ severity: LogSeverity,
                     _ object: Any,
                     filename: String = #file,
@@ -134,6 +142,7 @@ public final class LogService {
                   funcName: funcName)
     }
     
+    /// Propagates the log to all the registered providers.
     private func propagate(_ object: Any,
                            _ severity: LogSeverity,
                            filename: String = #file,
@@ -144,6 +153,7 @@ public final class LogService {
         }
     }
     
+    /// Extracts the filename from the filepath.
     private static func fileName(filePath: String) -> String {
         let components = filePath.components(separatedBy: "/")
         return components.isEmpty ? "" : components.last!
