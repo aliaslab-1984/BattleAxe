@@ -20,6 +20,40 @@ public final class LogService {
         providers.append(provider)
     }
     
+    public func log(_ severity: LogSeverity,
+                    _ object: Any,
+                    filename: String = #file,
+                    funcName: String = #function,
+                    line: Int = #line) {
+        switch severity {
+        case .verbose:
+            self.verbose(object,
+                         filename: filename,
+                         line: line,
+                         funcName: funcName)
+        case .debug:
+            self.debug(object,
+                         filename: filename,
+                         line: line,
+                         funcName: funcName)
+        case .info:
+            self.info(object,
+                         filename: filename,
+                         funcName: funcName,
+                         line: line)
+        case .warning:
+            self.warning(object,
+                         filename: filename,
+                         line: line,
+                         funcName: funcName)
+        case .error:
+            self.error(object,
+                       filename: filename,
+                       line: line,
+                       funcName: funcName)
+        }
+    }
+    
     public func info(_ object: Any,
               filename: String = #file,
               funcName: String = #function,

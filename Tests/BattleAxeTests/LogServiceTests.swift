@@ -14,10 +14,12 @@ final class LogServiceTests: XCTestCase {
         let message = "Ciao"
         let fileWriter = MockFileWriter(filename: "", appGroup: nil, fileManager: .default)
         let handler = MockFileLogProvider(dateFormatter: DateFormatter(), fileWriter: fileWriter)
+        LogService.shared.minimumSeverity = .debug
         LogService.register(provider: handler)
         LogService.shared.debug(message)
         
-        XCTAssert(fileWriter.lastPrintedMessage == message)
+        XCTAssertNotNil(fileWriter.lastPrintedMessage)
+        XCTAssertEqual(fileWriter.lastPrintedMessage, message)
     }
     
     func testLogDisabled() {
@@ -42,9 +44,36 @@ final class LogServiceTests: XCTestCase {
         XCTAssert(fileWriter.lastPrintedMessage == nil)
     }
     
+    func testLogBelowMinimumLevelLog() {
+        let message = "Ciao"
+        let fileWriter = MockFileWriter(filename: "", appGroup: nil, fileManager: .default)
+        let handler = MockFileLogProvider(dateFormatter: DateFormatter(), fileWriter: fileWriter)
+        LogService.register(provider: handler)
+        LogService.shared.minimumSeverity = .warning
+        LogService.shared.log(.debug, message)
+        
+        XCTAssert(fileWriter.lastPrintedMessage == nil)
+    }
+    
+    func testallLogsSeverityWithLog() {
+        let message = "Ciao"
+        let fileWriter = MockFileWriter(filename: "", appGroup: nil, fileManager: .default)
+        let handler = MockFileLogProvider(dateFormatter: DateFormatter(), fileWriter: fileWriter)
+        LogService.register(provider: handler)
+        LogService.shared.minimumSeverity = .info
+        let cases = LogSeverity.allCases
+        cases.forEach { (severity) in
+            LogService.shared.log(severity, message)
+        }
+        
+        XCTAssertNotNil(fileWriter.lastPrintedMessage)
+    }
+    
     static var allTests = [
-        ("testBaseLogging", testBaseLogging),
+        //("testBaseLogging", testBaseLogging),
         ("testLogDisabled", testLogDisabled),
-        ("testLogBelowMinimumLevel", testLogBelowMinimumLevel)
+        ("testLogBelowMinimumLevel", testLogBelowMinimumLevel),
+        ("testLogBelowMinimumLevelLog", testLogBelowMinimumLevelLog),
+        ("testallLogsSeverityWithLog", testallLogsSeverityWithLog)
     ]
 }
