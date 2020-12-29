@@ -6,10 +6,15 @@ public final class LogService {
     
     private static var providers = [LogProvider]()
     
+    /// Singleton instance.
     public static let shared = LogService(providers: providers)
     
+    /// The minimum severity that will be displayed/saved. For reference see `LogSeverity` to
+    /// see the rawValues.
     public var minimumSeverity: LogSeverity = .debug
+    /// How the logs are displayed/saved. The `.standard` configuration gives you all the information such the date, the function name and the line number.
     public var configuration: LoggerConfiguration = .standard
+    /// Whether the logging is enabled or not.
     public var enabled: Bool = true
     
     private init(providers: [LogProvider]) {

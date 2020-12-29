@@ -8,7 +8,7 @@
 import Foundation
 import BattleAxe
 
-final class MockedFileManager: BAFileManaged {
+final class MockedFileManager: FileSystemController {
     
     struct MockFile: Hashable {
         var path: String
@@ -93,6 +93,7 @@ final class MockedFileManager: BAFileManaged {
     
     enum ManagerError: Error {
         case fileNotFound
+        case urlNotFound
     }
     
     func removeItem(atPath path: String) throws {
@@ -103,5 +104,49 @@ final class MockedFileManager: BAFileManaged {
         }
         
         files.remove(item)
+    }
+    
+    func fileExists(atPath path: String, isDirectory: UnsafeMutablePointer<ObjCBool>?) -> Bool {
+        guard let _ = files.first(where: { (file) -> Bool in
+            return file.path == path
+        }) else {
+            return false
+        }
+        
+        //isDirectory = UnsafeMutablePointer(ObjCBool(false))
+        return true
+    }
+    
+    var createdDirectory: Bool = false
+    
+    func createDirectory(atPath path: String,
+                         withIntermediateDirectories createIntermediates: Bool,
+                         attributes: [FileAttributeKey : Any]?) throws {
+        createdDirectory = true
+    }
+    
+    func containerURL(forSecurityApplicationGroupIdentifier groupIdentifier: String) -> URL? {
+        let initialPath = extractBasePath()
+        return URL(string: initialPath)
+    }
+    
+    func url(for directory: FileManager.SearchPathDirectory, in domain: FileManager.SearchPathDomainMask, appropriateFor url: URL?, create shouldCreate: Bool) throws -> URL {
+        let initialPath = extractBasePath()
+        guard let url = URL(string: initialPath) else {
+            throw ManagerError.urlNotFound
+        }
+        return url
+    }
+    
+    private func extractBasePath() -> String {
+        guard let path = files.first?.path else {
+            return ""
+        }
+        
+        let components = path.components(separatedBy: "/")
+        guard let last = components.last else {
+            return ""
+        }
+        return path.replacingOccurrences(of: last, with: "")
     }
 }

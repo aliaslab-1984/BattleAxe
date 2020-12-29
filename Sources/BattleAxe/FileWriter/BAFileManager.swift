@@ -12,11 +12,10 @@ public final class BAFileManager {
     
     public static let fileExtension: String = ".logs"
     private let folderName: String
-    private static let fileManager = FileManager.default
-    private let manager: BAFileManaged
+    private let manager: FileSystemController
     
     init(folderName: String,
-         fileManager: BAFileManaged = FileManager.default) {
+         fileManager: FileSystemController = FileManager.default) {
         self.folderName = folderName
         self.manager = fileManager
     }
@@ -31,8 +30,8 @@ public final class BAFileManager {
     func createLogsFolderIfNeeded(_ path: String) throws -> String? {
         let finalPath = path + "/" + folderName
         var isDir: ObjCBool = false
-        if Self.fileManager.fileExists(atPath: finalPath,
-                                       isDirectory: &isDir) {
+        if manager.fileExists(atPath: finalPath,
+                              isDirectory: &isDir) {
             if isDir.boolValue {
             // file exists and is a directory
                 return finalPath
@@ -42,9 +41,9 @@ public final class BAFileManager {
             }
         } else {
             // file or directory does not exist
-            try Self.fileManager.createDirectory(atPath: finalPath,
-                                                 withIntermediateDirectories: false,
-                                                 attributes: nil)
+            try manager.createDirectory(atPath: finalPath,
+                                        withIntermediateDirectories: false,
+                                        attributes: nil)
             return finalPath
         }
     }
@@ -55,12 +54,12 @@ public final class BAFileManager {
     func baseURLFor(appGroup: String?) -> URL? {
         let url: URL
         if let group = appGroup {
-            guard let customURL = Self.fileManager.containerURL(forSecurityApplicationGroupIdentifier: group) else {
+            guard let customURL = manager.containerURL(forSecurityApplicationGroupIdentifier: group) else {
                 return nil
             }
             url = customURL
         } else {
-            guard let customURL = try? Self.fileManager.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false) else {
+            guard let customURL = try? manager.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false) else {
                 return nil
             }
             url = customURL
@@ -172,7 +171,7 @@ public final class BAFileManager {
             return
         }
         
-        let contents =  Self.fileManager.contents(atPath: currentFilePath)
+        let contents =  manager.contents(atPath: currentFilePath)
         //If a file already exists at path, this method overwrites the contents of that
         //file if the current process has the appropriate privileges to do so.
         manager.createFile(atPath: currentDirectory + first, contents: contents, attributes: nil)
