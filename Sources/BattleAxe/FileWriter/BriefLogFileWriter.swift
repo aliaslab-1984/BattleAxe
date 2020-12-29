@@ -14,7 +14,7 @@ public final class BriefLogFileWriter: FileWriter {
     public var rotationConfiguration: RotatorConfiguration
     
     private var filePath: String
-    private var fileHandle: FileHandle?
+    private var fileSeeker: BAFileSeeker
     private var queue: DispatchQueue
     private static let queueName: String = "SmallLogFileWriter"
     private var filename: String
@@ -39,7 +39,9 @@ public final class BriefLogFileWriter: FileWriter {
             guard let path = try manager.createLogsFolderIfNeeded(url.path) else {
                 fatalError("Unable to create a subdirectory.")
             }
-            self.filePath = path + "/" + filename + BAFileManager.fileExtension
+            let completePath = path + "/" + filename + BAFileManager.fileExtension
+            self.filePath = completePath
+            fileSeeker = BAFileAppender(path: completePath, fileSystemController: FileManager.default)
         } catch let error {
             fatalError(error.localizedDescription)
         }
@@ -60,13 +62,12 @@ public final class BriefLogFileWriter: FileWriter {
     }
     
     deinit {
-        fileHandle?.closeFile()
+        fileSeeker.close()
     }
     
     public func write(_ message: String) {
         queue.sync(execute: { [weak self] in
-            guard let strongSelf = self,
-                  let file = strongSelf.getFileHandle() else {
+            guard let strongSelf = self else {
                 return
             }
             
@@ -81,17 +82,14 @@ public final class BriefLogFileWriter: FileWriter {
                                                 rotationConfiguration: rotationConfiguration)
                     // We close and make the file handle reference nil, so the getFileHandle() mehod returns a
                     // brand new file.
-                    fileHandle?.closeFile()
-                    fileHandle = nil
+                    fileSeeker.close()
                     
-                    if let handle = getFileHandle() {
-                        message.appendTo(file: handle)
-                        strongSelf.lastMessage = message
-                        strongSelf.counter = 1
-                    }
+                    message.appendTo(file: fileSeeker)
+                    strongSelf.lastMessage = message
+                    strongSelf.counter = 1
                     return
                 }
-                message.appendTo(file: file)
+                message.appendTo(file: fileSeeker)
                 strongSelf.lastMessage = message
                 strongSelf.counter = 1
                 return
@@ -100,28 +98,15 @@ public final class BriefLogFileWriter: FileWriter {
             if message == unMessage {
                 strongSelf.counter += 1
             } else {
-                " [\(strongSelf.counter) times]\n".appendTo(file: file)
+                " [\(strongSelf.counter) times]\n".appendTo(file: fileSeeker)
                 strongSelf.counter = 1
                 strongSelf.lastMessage = message
-                message.appendTo(file: file)
+                message.appendTo(file: fileSeeker)
             }
         })
     }
     
     public func deleteLogs() {
         _ = manager.deleteAllLogs(filePath: self.filePath, filename: filename)
-    }
-    
-    private func getFileHandle() -> FileHandle? {
-        if fileHandle == nil {
-            let fileManager = FileManager.default
-            if !fileManager.fileExists(atPath: filePath) {
-                fileManager.createFile(atPath: filePath, contents: nil, attributes: nil)
-            }
-            
-            fileHandle = FileHandle(forWritingAtPath: filePath)
-        }
-        
-        return fileHandle
     }
 }

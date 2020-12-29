@@ -48,6 +48,7 @@ extension LogSeverity: CustomStringConvertible {
         }
     }
     
+    /// A pretty printed composition of the emojii and the description for the severity.
     public var prettyDescription: String {
         
         return self.emoji + " " + description

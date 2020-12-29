@@ -13,7 +13,7 @@ public final class StandardLogFileWriter: FileWriter {
     
     private var filePath: String
     private var filename: String
-    private var fileHandle: FileHandle?
+    private var fileSeeker: BAFileSeeker
     private var queue: DispatchQueue
     private static let queueName: String = "FullLogFileWriter"
     private let manager: BAFileManager
@@ -35,7 +35,9 @@ public final class StandardLogFileWriter: FileWriter {
             guard let path = try manager.createLogsFolderIfNeeded(url.path) else {
                 fatalError("Unable to create a subdirectory.")
             }
-            self.filePath = path + "/" + filename + BAFileManager.fileExtension
+            let finalPath = path + "/" + filename + BAFileManager.fileExtension
+            self.filePath = finalPath
+            self.fileSeeker = BAFileAppender(path: finalPath, fileSystemController: FileManager.default)
         } catch let error {
             fatalError(error.localizedDescription)
         }
@@ -44,7 +46,7 @@ public final class StandardLogFileWriter: FileWriter {
     /// Returns a string representation for the log collection.
     public func fileData() -> String {
         
-        guard let data = getFileHandle()?.readDataToEndOfFile(),
+        guard let data = fileSeeker.readAll(),
               let stringRepresentation = String(data: data, encoding: .utf8) else {
             return ""
         }
@@ -58,7 +60,7 @@ public final class StandardLogFileWriter: FileWriter {
     }
     
     deinit {
-        fileHandle?.closeFile()
+        fileSeeker.close()
     }
     
     public func write(_ message: String) {
@@ -78,8 +80,7 @@ public final class StandardLogFileWriter: FileWriter {
                                            rotationConfiguration: rotationConfiguration)
                 // We close and make the file handle reference nil, so the getFileHandle() mehod returns a
                 // brand new file.
-                fileHandle?.closeFile()
-                fileHandle = nil
+                fileSeeker.close()
                 
                 self?.writeAndCR(message)
                 return
@@ -90,26 +91,12 @@ public final class StandardLogFileWriter: FileWriter {
     }
     
     private func writeAndCR(_ message: String) {
-        if let file = self.getFileHandle() {
-            let printed = message + "\n"
-            printed.appendTo(file: file)
-        }
+        let printed = message + "\n"
+        printed.appendTo(file: fileSeeker)
     }
     
     public func deleteLogs() {
         _ = manager.deleteAllLogs(filePath: self.filePath, filename: filename)
     }
     
-    private func getFileHandle() -> FileHandle? {
-        if fileHandle == nil {
-            let fileManager = FileManager.default
-            if !fileManager.fileExists(atPath: filePath) {
-                fileManager.createFile(atPath: filePath, contents: nil, attributes: nil)
-            }
-            
-            fileHandle = FileHandle(forWritingAtPath: filePath)
-        }
-        
-        return fileHandle
-    }
 }
