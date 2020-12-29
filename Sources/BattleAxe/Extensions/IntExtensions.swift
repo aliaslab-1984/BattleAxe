@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension Int {
+public extension Int {
 
     var gigaBytes: Int {
         return Int(UInt(self).gigaBytes)
@@ -23,7 +23,7 @@ extension Int {
     
 }
 
-extension UInt {
+public extension UInt {
     
     static let oneGigabyte: UInt = oneMegabyte * 1024 // bytes
     static let oneMegabyte: UInt = oneKilobyte * 1024 // bytes
@@ -57,7 +57,7 @@ extension UInt {
     
 }
 
-extension Double {
+public extension Double {
     
     /// Returns the corresponding hour in seconds
     var hoursToSeconds: Double {
