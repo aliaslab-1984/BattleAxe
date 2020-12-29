@@ -65,19 +65,19 @@ public final class RotatorConfiguration {
         }
         
         guard !filePath.isEmpty else {
-            return true
+            return false
         }
         
         guard let information = try? FileManager.default.attributesOfItem(atPath: filePath) else {
-            return true
+            return false
         }
         
         guard let fileSize = information[.size] as? UInt64 else {
-            return true
+            return false
         }
         
         guard let age = information[.creationDate] as? Date else {
-            return true
+            return false
         }
         
         let directoryPath = filePath.replacingOccurrences(of: "/" + fileName + BAFileManager.fileExtension, with: "")

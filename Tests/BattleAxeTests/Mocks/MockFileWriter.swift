@@ -17,7 +17,8 @@ final class MockFileWriter: FileWriter {
     init(filename: String,
          appGroup: String?,
          rotationConfiguration: RotatorConfiguration = .none,
-         fileManager: BAFileManager) {
+         fileManager: BAFileManager,
+         fileSeeker: BAFileSeeker = BAFileAppender(fileSystemController: FileManager.default)) {
         self.rotationConfiguration = rotationConfiguration
     }
     

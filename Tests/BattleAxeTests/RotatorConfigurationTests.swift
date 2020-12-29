@@ -12,13 +12,21 @@ final class RotatorConfigurationTests: XCTestCase {
     
     func testSizeLimitNotSet() {
         let pendingData = Data(count: 30.kiloBytes)
-        let fileSize = UInt64(780)
         let rotator = try! RotatorConfiguration(maxSize: 0, maxAge: 0, maxFiles: 0)
         
-        let result = rotator.doesItFits(fileSize, pendingData.count)
+        let result = rotator.check("", "", pendingData: pendingData)
         
         XCTAssert(result)
     }
+    
+    func testEmptyPath() {
+        let rotator = try! RotatorConfiguration(maxSize: 30.megaBytes, maxAge: 7.0.daysToSeconds, maxFiles: 4)
+        
+        let result = rotator.check("", "", pendingData: Data())
+        
+        XCTAssertFalse(result)
+    }
+    
     
     func testBelowMaxSize() {
         let pendingData = Data(count: 30.kiloBytes)
@@ -70,17 +78,27 @@ final class RotatorConfigurationTests: XCTestCase {
         XCTAssert(result)
     }
     
+    func testMoreThanLimitFiles() {
+        let rotator = try! RotatorConfiguration(maxSize: 50.kiloBytes, maxAge: 0, maxFiles: 4)
+        
+        let result = rotator.belowMaxNumberOfFiles(6)
+        
+        XCTAssertFalse(result)
+    }
+    
     func testRotatorRaisesException() {
         XCTAssertThrowsError(try RotatorConfiguration(maxSize: 0, maxAge: 7.0.daysToSeconds, maxFiles: 11))
     }
 
     static var allTests = [
         ("testSizeLimitNotSet", testSizeLimitNotSet),
+        ("testEmptyPath", testEmptyPath),
         ("testBelowMaxSize", testBelowMaxSize),
         ("testOverMaxSize", testOverMaxSize),
         ("testOlderCreationDate", testOlderCreationDate),
         ("testNewerCreationDate", testNewerCreationDate),
         ("testMaxAgeNotSet", testMaxAgeNotSet),
-        ("testRotatorRaisesException", testRotatorRaisesException)
+        ("testRotatorRaisesException", testRotatorRaisesException),
+        ("testMoreThanLimitFiles", testMoreThanLimitFiles)
     ]
 }

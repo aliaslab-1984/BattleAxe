@@ -7,25 +7,30 @@
 
 import Foundation
 
+// - MARK: BAFileSeeker
 public protocol BAFileSeeker {
     
     func write(_ data: Data)
     func close()
     func readAll() -> Data?
+    func open(at path: String)
 }
 
-final class BAFileAppender: BAFileSeeker {
+// - MARK: BAFileAppender
+public final class BAFileAppender: BAFileSeeker {
     
     private var fileHandle: FileHandle?
-    private var path: String
+    private var path: String?
     private var fileSystem: FileSystemController
     
-    init(path: String,
-         fileSystemController: FileSystemController) {
-        self.path = path
+    public init(fileSystemController: FileSystemController) {
         self.fileSystem = fileSystemController
-        if !fileSystemController.fileExists(atPath: path, isDirectory: nil) {
-            fileSystemController.createFile(atPath: path, contents: nil, attributes: nil)
+    }
+    
+    public func open(at path: String) {
+        self.path = path
+        if !fileSystem.fileExists(atPath: path, isDirectory: nil) {
+            fileSystem.createFile(atPath: path, contents: nil, attributes: nil)
         }
 
         fileHandle = FileHandle(forWritingAtPath: path)
@@ -44,7 +49,7 @@ final class BAFileAppender: BAFileSeeker {
         }
     }
     
-    func write(_ data: Data) {
+    public func write(_ data: Data) {
         restoreFileifNeeded()
         self.seekToEnd()
         
@@ -59,7 +64,7 @@ final class BAFileAppender: BAFileSeeker {
         }
     }
     
-    func readAll() -> Data? {
+    public func readAll() -> Data? {
         restoreFileifNeeded()
         
         if #available(iOS 13.4, macOS 10.15.4, *) {
@@ -76,7 +81,7 @@ final class BAFileAppender: BAFileSeeker {
         
     }
     
-    func close() {
+    public func close() {
         if #available(iOS 13.4, macOS 10.15.4, *) {
             do {
                 try fileHandle?.close()
@@ -91,11 +96,14 @@ final class BAFileAppender: BAFileSeeker {
     }
     
     private func restoreFileifNeeded() {
-        if !fileSystem.fileExists(atPath: path, isDirectory: nil) {
-            fileSystem.createFile(atPath: path, contents: nil, attributes: nil)
+        guard let unwrappedPath = path else {
+            return
+        }
+        if !fileSystem.fileExists(atPath: unwrappedPath, isDirectory: nil) {
+            fileSystem.createFile(atPath: unwrappedPath, contents: nil, attributes: nil)
         }
 
-        fileHandle = FileHandle(forWritingAtPath: path)
+        fileHandle = FileHandle(forWritingAtPath: unwrappedPath)
     }
 
 }

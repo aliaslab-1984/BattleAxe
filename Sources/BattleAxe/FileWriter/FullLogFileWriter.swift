@@ -21,7 +21,8 @@ public final class StandardLogFileWriter: FileWriter {
     public init(filename: String,
                 appGroup: String? = nil,
                 rotationConfiguration: RotatorConfiguration = .standard,
-                fileManager: BAFileManager = .default) {
+                fileManager: BAFileManager = .default,
+                fileSeeker: BAFileSeeker = BAFileAppender(fileSystemController: FileManager.default)) {
         
         guard let url = fileManager.baseURLFor(appGroup: appGroup) else {
             fatalError("Unable to get logs url.")
@@ -31,13 +32,14 @@ public final class StandardLogFileWriter: FileWriter {
         self.rotationConfiguration = rotationConfiguration
         self.filename = filename
         self.queue = DispatchQueue(label: Self.queueName, qos: .utility)
+        self.fileSeeker = fileSeeker
         do {
             guard let path = try manager.createLogsFolderIfNeeded(url.path) else {
                 fatalError("Unable to create a subdirectory.")
             }
             let finalPath = path + "/" + filename + BAFileManager.fileExtension
             self.filePath = finalPath
-            self.fileSeeker = BAFileAppender(path: finalPath, fileSystemController: FileManager.default)
+            self.fileSeeker.open(at: finalPath)
         } catch let error {
             fatalError(error.localizedDescription)
         }

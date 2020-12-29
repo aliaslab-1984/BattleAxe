@@ -20,13 +20,17 @@ public final class BriefLogFileWriter: FileWriter {
     private var filename: String
     private let manager: BAFileManager
     
+    // Specific for this type of FileWriter:
+    // It keeps a reference of the last message that has been sent.
+    // If the last message is the same as the actual one, it increases the count.
     private var lastMessage: String?
     private var counter: Int = 1
     
     public init(filename: String,
                 appGroup: String? = nil,
                 rotationConfiguration: RotatorConfiguration = .standard,
-                fileManager: BAFileManager = .default) {
+                fileManager: BAFileManager = .default,
+                fileSeeker: BAFileSeeker = BAFileAppender(fileSystemController: FileManager.default)) {
         
         guard let url = fileManager.baseURLFor(appGroup: appGroup) else {
             fatalError("Unable to get logs url.")
@@ -35,13 +39,14 @@ public final class BriefLogFileWriter: FileWriter {
         self.rotationConfiguration = rotationConfiguration
         self.filename = filename
         self.queue = DispatchQueue(label: Self.queueName, qos: .utility)
+        self.fileSeeker = fileSeeker
         do {
             guard let path = try manager.createLogsFolderIfNeeded(url.path) else {
                 fatalError("Unable to create a subdirectory.")
             }
             let completePath = path + "/" + filename + BAFileManager.fileExtension
             self.filePath = completePath
-            fileSeeker = BAFileAppender(path: completePath, fileSystemController: FileManager.default)
+            self.fileSeeker.open(at: completePath)
         } catch let error {
             fatalError(error.localizedDescription)
         }
