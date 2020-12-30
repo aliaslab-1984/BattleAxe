@@ -12,7 +12,7 @@ final class LogServiceTests: XCTestCase {
     
     func testBaseLogging() {
         let message = "Ciao"
-        let fileWriter = MockFileWriter(filename: "", appGroup: nil, fileManager: .default)
+        let fileWriter = MockFileWriter(.defaultConfig(name: "", queueName: "MockQueue"))
         let handler = MockFileLogProvider(dateFormatter: DateFormatter(), fileWriter: fileWriter)
         LogService.shared.minimumSeverity = .debug
         LogService.register(provider: handler)
@@ -24,7 +24,7 @@ final class LogServiceTests: XCTestCase {
     
     func testLogDisabled() {
         let message = "Ciao"
-        let fileWriter = MockFileWriter(filename: "", appGroup: nil, fileManager: .default)
+        let fileWriter = MockFileWriter(.defaultConfig(name: "", queueName: "MockQueue"))
         let handler = MockFileLogProvider(dateFormatter: DateFormatter(), fileWriter: fileWriter)
         LogService.register(provider: handler)
         LogService.shared.enabled = false
@@ -35,7 +35,7 @@ final class LogServiceTests: XCTestCase {
     
     func testLogBelowMinimumLevel() {
         let message = "Ciao"
-        let fileWriter = MockFileWriter(filename: "", appGroup: nil, fileManager: .default)
+        let fileWriter = MockFileWriter(.defaultConfig(name: "", queueName: "MockQueue"))
         let handler = MockFileLogProvider(dateFormatter: DateFormatter(), fileWriter: fileWriter)
         LogService.register(provider: handler)
         LogService.shared.minimumSeverity = .warning
@@ -46,7 +46,7 @@ final class LogServiceTests: XCTestCase {
     
     func testLogBelowMinimumLevelLog() {
         let message = "Ciao"
-        let fileWriter = MockFileWriter(filename: "", appGroup: nil, fileManager: .default)
+        let fileWriter = MockFileWriter(.defaultConfig(name: "", queueName: "MockQueue"))
         let handler = MockFileLogProvider(dateFormatter: DateFormatter(), fileWriter: fileWriter)
         LogService.register(provider: handler)
         LogService.shared.minimumSeverity = .warning
@@ -57,7 +57,7 @@ final class LogServiceTests: XCTestCase {
     
     func testallLogsSeverityWithLog() {
         let message = "Ciao"
-        let fileWriter = MockFileWriter(filename: "", appGroup: nil, fileManager: .default)
+        let fileWriter = MockFileWriter(.defaultConfig(name: "", queueName: "MockQueue"))
         let handler = MockFileLogProvider(dateFormatter: DateFormatter(), fileWriter: fileWriter)
         LogService.register(provider: handler)
         LogService.shared.minimumSeverity = .info

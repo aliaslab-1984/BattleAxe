@@ -17,7 +17,8 @@ final class FullFileWriterTests: XCTestCase {
         let mockFileController = MockedFileManager(files: .init(files))
         let mockManager = BAFileManager(folderName: "Logs", fileManager: mockFileController)
         
-        let fileWriter = StandardLogFileWriter(filename: "myFile", fileManager: mockManager)
+        let configuration = FileWriterConfiguration(filename: "myFile", appGroup: nil, queueName: "StandardLogFileWriter", rotationConfiguration: .standard, fileManager: mockManager, fileSeeker: BAFileController(fileSystemController: mockFileController))
+        let fileWriter = StandardLogFileWriter(configuration)
         
         fileWriter.write("Hello")
         
