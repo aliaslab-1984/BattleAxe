@@ -37,8 +37,8 @@ public final class RotatorConfiguration {
     ///   - maxSize: The max size for the file. In Bytes. Default is 0.
     ///   - maxAge: The max age for the file. In Seconds. Default is 0.
     public init(maxSize: Int,
-         maxAge: TimeInterval,
-         maxFiles: Int) throws {
+                maxAge: TimeInterval,
+                maxFiles: Int) throws {
         guard 0...9 ~= maxFiles else {
             throw RotationConfigurationError.invalidParameter
         }
@@ -56,7 +56,8 @@ public final class RotatorConfiguration {
     ///  **False** if one or both the conditions are not satisfied. In this case a new file is required.
     func check(_ filePath: String,
                _ fileName: String,
-               pendingData: Data) -> Bool {
+               pendingData: Data,
+               using controller: FileSystemController = FileManager.default) -> Bool {
         
         // If the configuration is set to `.none`, we don't need to read any file,
         // the check result should always be true. (faster.)
@@ -68,7 +69,7 @@ public final class RotatorConfiguration {
             return false
         }
         
-        guard let information = try? FileManager.default.attributesOfItem(atPath: filePath) else {
+        guard let information = try? controller.attributesOfItem(atPath: filePath) else {
             return false
         }
         
@@ -82,15 +83,15 @@ public final class RotatorConfiguration {
         
         let directoryPath = filePath.replacingOccurrences(of: "/" + fileName + BAFileManager.fileExtension, with: "")
         
-        guard let items = try? FileManager.default.contentsOfDirectory(atPath: directoryPath) else {
+        guard let items = try? controller.contentsOfDirectory(atPath: directoryPath) else {
             return true
         }
         
         let fits = doesItFits(fileSize, pendingData.count)
-        let older = !isOlder(than: age)
+        let below = belowMaxAge(age)
         let excedes = belowMaxNumberOfFiles(items.count - 1)
         
-        return fits && older && excedes
+        return fits && below && excedes
     }
     
     /// Determines if the pending data fits the **maxSize** requirements.
@@ -115,7 +116,7 @@ public final class RotatorConfiguration {
     /// Determines if the logs file creation date fulfills the **maxAge** requirements.
     /// - Parameter date: The file's creation date.
     /// - Returns: **True** if the requirements are fulfilled, otherwise **false**.
-    func isOlder(than date: Date) -> Bool {
+    func belowMaxAge(_ date: Date) -> Bool {
         
         guard maxAge != 0 else {
             return false

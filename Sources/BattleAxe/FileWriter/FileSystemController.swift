@@ -26,6 +26,8 @@ public protocol FileSystemController {
     func containerURL(forSecurityApplicationGroupIdentifier groupIdentifier: String) -> URL?
     
     func url(for directory: FileManager.SearchPathDirectory, in domain: FileManager.SearchPathDomainMask, appropriateFor url: URL?, create shouldCreate: Bool) throws -> URL
+    
+    func attributesOfItem(atPath path: String) throws -> [FileAttributeKey : Any]
 }
 
 

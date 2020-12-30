@@ -21,7 +21,9 @@ public final class BAFileController: BAFileSeeker {
     public func open(at path: String) {
         self.path = path
         if !fileSystem.fileExists(atPath: path, isDirectory: nil) {
-            fileSystem.createFile(atPath: path, contents: nil, attributes: nil)
+            fileSystem.createFile(atPath: path,
+                                  contents: nil,
+                                  attributes: nil)
         }
 
         fileHandle = FileHandle(forWritingAtPath: path)
@@ -31,7 +33,7 @@ public final class BAFileController: BAFileSeeker {
         restoreFileifNeeded()
         if #available(iOS 13.4, macOS 10.15.4, *) {
             do {
-            try fileHandle?.seekToEnd()
+                try fileHandle?.seekToEnd()
             } catch _ {
                 // handle error..
             }

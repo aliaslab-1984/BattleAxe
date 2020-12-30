@@ -53,7 +53,7 @@ final class RotatorTests: XCTestCase {
         let mockManager = MockedFileManager(files: .init( initialFiles))
         let configuration = try! RotatorConfiguration(maxSize: 0, maxAge: 1.0.hoursToSeconds, maxFiles: 2)
         
-        XCTAssert(configuration.isOlder(than: Date().addingTimeInterval(0.5.hoursToSeconds)))
+        XCTAssert(configuration.belowMaxAge( Date().addingTimeInterval(0.5.hoursToSeconds)))
         
         let myManager = BAFileManager(folderName: "Logs", fileManager: mockManager)
         _ = myManager.rotateLogsFile(basePath,
@@ -69,7 +69,7 @@ final class RotatorTests: XCTestCase {
         let mockManager = MockedFileManager(files: .init( initialFiles))
         let configuration = try! RotatorConfiguration(maxSize: 0, maxAge: 1.0.hoursToSeconds, maxFiles: 2)
         
-        XCTAssert(configuration.isOlder(than: Date().addingTimeInterval(0.5.hoursToSeconds)))
+        XCTAssert(configuration.belowMaxAge(Date().addingTimeInterval(0.5.hoursToSeconds)))
         
         let myManager = BAFileManager(folderName: "Logs", fileManager: mockManager)
         _ = myManager.rotateLogsFile(basePath,

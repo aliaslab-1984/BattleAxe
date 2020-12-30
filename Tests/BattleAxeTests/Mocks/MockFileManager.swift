@@ -138,6 +138,21 @@ final class MockedFileManager: FileSystemController {
         return url
     }
     
+    func attributesOfItem(atPath path: String) throws -> [FileAttributeKey: Any] {
+        guard let item = files.first(where: { (file) -> Bool in
+            return file.path == path
+        }) else {
+            throw ManagerError.fileNotFound
+        }
+        
+        var dictionary: [FileAttributeKey: Any] = [:]
+        
+        dictionary[.creationDate] = Date(timeInterval: -900, since: Date())
+        dictionary[.size] = UInt64(item.dataContents?.count ?? 0)
+        
+        return dictionary
+    }
+    
     private func extractBasePath() -> String {
         guard let path = files.first?.path else {
             return ""

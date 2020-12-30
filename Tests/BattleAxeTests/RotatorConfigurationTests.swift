@@ -53,7 +53,7 @@ final class RotatorConfigurationTests: XCTestCase {
         
         let fakeFileCreationDate = Date().addingTimeInterval(-14.0.daysToSeconds)
         
-        let result = rotator.isOlder(than:fakeFileCreationDate)
+        let result = rotator.belowMaxAge(fakeFileCreationDate)
         
         XCTAssertFalse(result)
     }
@@ -63,7 +63,7 @@ final class RotatorConfigurationTests: XCTestCase {
         
         let fakeFileCreationDate = Date().addingTimeInterval(-14.0.daysToSeconds)
         
-        let result = rotator.isOlder(than: fakeFileCreationDate)
+        let result = rotator.belowMaxAge(fakeFileCreationDate)
         
         XCTAssertFalse(result)
     }
@@ -73,7 +73,7 @@ final class RotatorConfigurationTests: XCTestCase {
         
         let fakeFileCreationDate = Date().addingTimeInterval(-24.0.minutesToSeconds)
         
-        let result = rotator.isOlder(than:fakeFileCreationDate)
+        let result = rotator.belowMaxAge(fakeFileCreationDate)
         
         XCTAssert(result)
     }
@@ -89,6 +89,23 @@ final class RotatorConfigurationTests: XCTestCase {
     func testRotatorRaisesException() {
         XCTAssertThrowsError(try RotatorConfiguration(maxSize: 0, maxAge: 7.0.daysToSeconds, maxFiles: 11))
     }
+    
+    func testWithMockFiles() {
+        
+        let files: [MockedFileManager.MockFile] = [
+            .init(path: "This/is/a/path/Logs/log.logs", bytes: 40.kiloBytes),
+            .init(path: "This/is/a/path/Logs/log.logs.1", bytes: 30.kiloBytes),
+            .init(path: "This/is/a/path/Logs/log.logs.2", bytes: 60.kiloBytes),
+            .init(path: "This/is/a/path/Logs/log.logs.3", bytes: 10.kiloBytes)
+        ]
+        let mockManager = MockedFileManager(files: .init(files))
+        
+        let rotatorConfiguration = try! RotatorConfiguration(maxSize: 80.kiloBytes, maxAge: 7.0.daysToSeconds, maxFiles: 9)
+        
+        let result = rotatorConfiguration.check("This/is/a/path/Logs/log.logs", "log", pendingData: Data(count: 200), using: mockManager)
+        
+        XCTAssert(result)
+    }
 
     static var allTests = [
         ("testSizeLimitNotSet", testSizeLimitNotSet),
@@ -99,6 +116,7 @@ final class RotatorConfigurationTests: XCTestCase {
         ("testNewerCreationDate", testNewerCreationDate),
         ("testMaxAgeNotSet", testMaxAgeNotSet),
         ("testRotatorRaisesException", testRotatorRaisesException),
-        ("testMoreThanLimitFiles", testMoreThanLimitFiles)
+        ("testMoreThanLimitFiles", testMoreThanLimitFiles),
+        ("testWithMockFiles", testWithMockFiles)
     ]
 }
