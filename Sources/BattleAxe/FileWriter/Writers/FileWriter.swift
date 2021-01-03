@@ -9,8 +9,24 @@ public struct FileWriterConfiguration {
     public var fileManager: BAFileManager
     public var fileSeeker: BAFileSeeker
     
-    public static func defaultConfig(name: String, queueName: String) -> FileWriterConfiguration {
-        return FileWriterConfiguration(filename: name, appGroup: nil, queueName: queueName, rotationConfiguration: .standard, fileManager: .default, fileSeeker: BAFileController(fileSystemController: FileManager.default))
+    public static func defaultConfig(name: String,
+                                     queueName: String,
+                                     appGroup: String? = nil) -> FileWriterConfiguration {
+        return FileWriterConfiguration(filename: name, appGroup: appGroup, queueName: queueName, rotationConfiguration: .standard, fileManager: .default, fileSeeker: BAFileController(fileSystemController: FileManager.default))
+    }
+    
+    public init(filename: String,
+                appGroup: String?,
+                queueName: String,
+                rotationConfiguration: RotatorConfiguration,
+                fileManager: BAFileManager,
+                fileSeeker: BAFileSeeker) {
+        self.filename = filename
+        self.appGroup = appGroup
+        self.queueName = queueName
+        self.rotationConfiguration = rotationConfiguration
+        self.fileManager = fileManager
+        self.fileSeeker = fileSeeker
     }
     
 }
