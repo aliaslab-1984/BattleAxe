@@ -69,11 +69,27 @@ final class LogServiceTests: XCTestCase {
         XCTAssertNotNil(fileWriter.lastPrintedMessage)
     }
     
+    func testExternalLogProvider() {
+        let message = "Ciao"
+        let externalHandler = ExternalLogHandler()
+        let listener = MockListener()
+        externalHandler.setListener(listener: listener)
+        LogService.register(provider: externalHandler)
+        LogService.shared.minimumSeverity = .info
+        let cases = LogSeverity.allCases
+        cases.forEach { (severity) in
+            LogService.shared.log(severity, message)
+        }
+        
+        XCTAssertNotNil(listener.lastMessage)
+    }
+    
     static var allTests = [
         //("testBaseLogging", testBaseLogging),
         ("testLogDisabled", testLogDisabled),
         ("testLogBelowMinimumLevel", testLogBelowMinimumLevel),
         ("testLogBelowMinimumLevelLog", testLogBelowMinimumLevelLog),
-        ("testallLogsSeverityWithLog", testallLogsSeverityWithLog)
+        ("testallLogsSeverityWithLog", testallLogsSeverityWithLog),
+        ("testExternalLogProvider", testExternalLogProvider)
     ]
 }
