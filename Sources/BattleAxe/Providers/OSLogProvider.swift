@@ -20,14 +20,10 @@ public struct OSLogProvider: LogProvider {
         self.subsystem = subsystem
     }
     
-    public func log(_ severity: LogSeverity,
-                    message: String,
-                    file: String,
-                    function: String,
-                    line: Int) {
+    public func log(_ message: LogMessage) {
         let log = OSLog(subsystem: self.subsystem, category: "BattleAxe")
-        let type = severity.toOSLogLevel()
-        os_log("%{public}@", log: log, type: type, severity.emoji + " " + message)
+        let type = message.severity.toOSLogLevel()
+        os_log("%{public}@", log: log, type: type, message.severity.emoji + " " + message.payload)
     }
     
 }

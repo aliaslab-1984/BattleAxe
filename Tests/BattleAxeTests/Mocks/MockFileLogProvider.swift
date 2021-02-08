@@ -18,8 +18,8 @@ final class MockFileLogProvider: LogProvider {
         self.fileWriter = fileWriter
     }
     
-    func log(_ severity: LogSeverity, message: String, file: String, function: String, line: Int) {
-        fileWriter.write(message)
+    func log(_ message: LogMessage) {
+        fileWriter.write(message.payload)
     }
     
 }

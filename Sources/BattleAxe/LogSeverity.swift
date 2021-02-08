@@ -1,6 +1,6 @@
 import Foundation
 
-public enum LogSeverity: Int, Comparable, CaseIterable {
+public enum LogSeverity: Int, Comparable, CaseIterable, Codable {
     
     case verbose = 10
     case debug = 20

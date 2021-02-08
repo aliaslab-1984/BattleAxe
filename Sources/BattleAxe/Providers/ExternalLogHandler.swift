@@ -25,12 +25,12 @@ public class ExternalLogHandler: LogProvider {
     
     private weak var listener: LogListener? = nil
     
-    func setListener(listener: LogListener?) {
+    func setListener(listener: LogListener?) {
         self.listener = listener
     }
     
-    public func log(_ severity: LogSeverity, message: String, file: String, function: String, line: Int) {
-        listener?.log(severity, message: message)
+    public func log(_ message: LogMessage) {
+        listener?.log(message.severity, message: message.payload)
     }
     
 }

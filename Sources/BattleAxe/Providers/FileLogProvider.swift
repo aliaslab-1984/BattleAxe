@@ -17,4 +17,12 @@ public struct FileLogProvider: LogProvider {
             fileWriter.write("[\(severity.prettyDescription) \(dateFormatter.getCurrentDateAsString()) \(file):\(function):\(line)] \(message)")
         }
     }
+    
+    public func log(_ message: LogMessage) {
+        if let _ = fileWriter as? BriefLogFileWriter {
+            fileWriter.write("[\(message.severity.prettyDescription) \(message.callingFilePath):\(message.callingStackFrame):\(message.callingFileLine)] \(message.payload)")
+        } else {
+            fileWriter.write("[\(message.severity.prettyDescription) \(dateFormatter.getCurrentDateAsString()) \(message.callingFilePath):\(message.callingStackFrame):\(message.callingFileLine)] \(message.payload)")
+        }
+    }
 }

@@ -153,8 +153,14 @@ public final class LogService {
                            filename: String = #file,
                            line: Int = #line,
                            funcName: String = #function) {
+        
+        var threadID: UInt64 = 0
+        pthread_threadid_np(nil, &threadID)
+        
+        let entity = ComplexMessage(payload: "\(object)", severity: severity, callingFilePath: filename, callingFileLine: line, callingStackFrame: funcName, callingThreadID: threadID)
+        
         LogService.providers.forEach {
-            $0.log(severity, message: ("\(object)"), file: LogService.fileName(filePath: filename), function: funcName, line: line)
+            $0.log(entity)
         }
     }
     
