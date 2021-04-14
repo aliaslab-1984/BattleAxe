@@ -12,14 +12,35 @@ final class LogServiceTests: XCTestCase {
     
     func testBaseLogging() {
         let message = "Ciao"
+        let dateFormatter = DateFormatter()
         let fileWriter = MockFileWriter(.defaultConfig(name: "", queueName: "MockQueue"))
-        let handler = MockFileLogProvider(dateFormatter: DateFormatter(), fileWriter: fileWriter)
+        let handler = MockFileLogProvider(dateFormatter: dateFormatter, fileWriter: fileWriter)
+        let oslog = OSLogProvider(dateFormatter: dateFormatter)
         LogService.shared.minimumSeverity = .debug
         LogService.register(provider: handler)
+        LogService.register(provider: oslog)
         LogService.shared.debug(message)
         
         XCTAssertNotNil(fileWriter.lastPrintedMessage)
         XCTAssertEqual(fileWriter.lastPrintedMessage, message)
+        
+        LogService.shared.log(.debug, message)
+        XCTAssertNotNil(fileWriter.lastPrintedMessage)
+        XCTAssertEqual(fileWriter.lastPrintedMessage, message)
+    }
+    
+    func testLogDebug() {
+        let message = "Ciao"
+        let listener = MockConsoleLogger()
+        LogService.shared.enabled = true
+        LogService.register(provider: listener)
+        LogService.shared.ifDebug(.debug, message)
+        
+        #if !DEBUG
+        XCTAssertNil(listener.lastMessage)
+        #else
+        XCTAssertNotNil(listener.lastMessage)
+        #endif
     }
     
     func testLogDisabled() {
@@ -90,6 +111,7 @@ final class LogServiceTests: XCTestCase {
         ("testLogBelowMinimumLevel", testLogBelowMinimumLevel),
         ("testLogBelowMinimumLevelLog", testLogBelowMinimumLevelLog),
         ("testallLogsSeverityWithLog", testallLogsSeverityWithLog),
-        ("testExternalLogProvider", testExternalLogProvider)
+        ("testExternalLogProvider", testExternalLogProvider),
+        ("testLogDebug", testLogDebug)
     ]
 }

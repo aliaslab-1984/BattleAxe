@@ -1,6 +1,0 @@
-projectKey=net.aliaslab.BattleAxe
-serverUrl=http://mnp-docker01.aliaslab.net:9001
-serverVersion=8.6.0.39681
-dashboardUrl=http://mnp-docker01.aliaslab.net:9001/dashboard?id=net.aliaslab.BattleAxe
-ceTaskId=AXjQRcoqOgolCOZuY35N
-ceTaskUrl=http://mnp-docker01.aliaslab.net:9001/api/ce/task?id=AXjQRcoqOgolCOZuY35N

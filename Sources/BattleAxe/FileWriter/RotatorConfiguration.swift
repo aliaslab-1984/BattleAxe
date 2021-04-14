@@ -37,8 +37,8 @@ public final class RotatorConfiguration {
     ///   - maxSize: The max size for the file. In Bytes. Default is 0.
     ///   - maxAge: The max age for the file. In Seconds. Default is 0.
     public convenience init(maxSize: Int,
-                maxAge: TimeInterval,
-                maxFiles: Int) throws {
+                            maxAge: TimeInterval,
+                            maxFiles: Int) throws {
         guard 0...9 ~= maxFiles else {
             throw RotationConfigurationError.invalidParameter
         }
