@@ -21,7 +21,7 @@ public final class BAFileManager {
     }
     
     /// Shared instance that uses the default SubFolder name.
-    public static let `default` = BAFileManager(folderName: "BattleAxeLogs")
+    public static let standard = BAFileManager(folderName: "BattleAxeLogs")
     
     /// Tries to create a subfolder given a path.
     /// - Parameter path: The base path where you want to create a folder.

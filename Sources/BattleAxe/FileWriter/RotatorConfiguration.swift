@@ -24,9 +24,9 @@ public final class RotatorConfiguration {
     let maxFiles: Int
     
     /// A pre-build configuration with no limitations on size, age or number of files.
-    public static let none = try! RotatorConfiguration(maxSize: 0, maxAge: 0, maxFiles: 0)
+    public static let none = RotatorConfiguration(0, 0, 0)
     /// The default configuration: the max size is set to 1 MegaByte and the max number of files is 2. The max age is not set.
-    public static let standard = try! RotatorConfiguration(maxSize: 1.megaBytes, maxAge: 0, maxFiles: 2)
+    public static let standard = RotatorConfiguration(1.megaBytes, 0, 2)
     
     /// The **maxSize** should be in bytes, for example: if you want to have a max size of 10 megabytes, use the `Int` extension:
     /// `RotatingLohHandler(maxSize: 10.megaBytes)`.
@@ -36,12 +36,18 @@ public final class RotatorConfiguration {
     /// - Parameters:
     ///   - maxSize: The max size for the file. In Bytes. Default is 0.
     ///   - maxAge: The max age for the file. In Seconds. Default is 0.
-    public init(maxSize: Int,
+    public convenience init(maxSize: Int,
                 maxAge: TimeInterval,
                 maxFiles: Int) throws {
         guard 0...9 ~= maxFiles else {
             throw RotationConfigurationError.invalidParameter
         }
+        self.init(maxSize, maxAge, maxFiles)
+    }
+    
+    private init(_ maxSize: Int,
+                 _ maxAge: TimeInterval,
+                 _ maxFiles: Int) {
         self.maxSize = maxSize
         self.maxAge = maxAge
         self.maxFiles = maxFiles

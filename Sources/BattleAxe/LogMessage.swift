@@ -44,8 +44,7 @@ public struct ComplexMessage: Codable, LogMessage {
     
 }
 
-fileprivate struct ProcessIdentification
-{
+fileprivate struct ProcessIdentification {
     // this ensures we only look up process info once
     public static let current = ProcessIdentification()
     

@@ -8,7 +8,7 @@ public enum LogSeverity: Int, Comparable, CaseIterable, Codable {
     case warning = 40
     case error = 50
     
-    public static func <(lhs: LogSeverity, rhs: LogSeverity) -> Bool {
+    public static func < (lhs: LogSeverity, rhs: LogSeverity) -> Bool {
         return lhs.rawValue < rhs.rawValue
     }
 }
