@@ -23,6 +23,7 @@ final class LogServiceTests: XCTestCase {
         LogService.shared.minimumSeverity = .verbose
         LogService.register(provider: handler)
         LogService.register(provider: oslog)
+        LogService.register(provider: ConsoleLogProvider(dateFormatter: dateFormatter))
         LogService.shared.debug(message)
         
         XCTAssertNotNil(fileWriter.lastPrintedMessage)
