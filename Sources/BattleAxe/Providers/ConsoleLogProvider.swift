@@ -2,10 +2,14 @@ import Foundation
 
 public struct ConsoleLogProvider: LogProvider {
     
+    public var logIdentifier: String
+    
     private var dateFormatter: DateFormatter
     
-    public init(dateFormatter: DateFormatter) {
+    public init(dateFormatter: DateFormatter,
+                identifier: String = "ConsoleLog Provider") {
         self.dateFormatter = dateFormatter
+        self.logIdentifier = identifier
     }
     
     public func log(_ message: LogMessage) {

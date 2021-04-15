@@ -11,13 +11,17 @@ import os.log
 @available(iOS 10.0, macOS 10.12, tvOS 10.0, watchOS 3.0, *)
 public struct OSLogProvider: LogProvider {
     
+    public var logIdentifier: String
+    
     private var dateFormatter: DateFormatter
     private var subsystem: String
     
     public init(dateFormatter: DateFormatter,
-                subsystem: String = "") {
+                subsystem: String = "",
+                identifier: String = "Default OSLogIdentifier") {
         self.dateFormatter = dateFormatter
         self.subsystem = subsystem
+        self.logIdentifier = identifier
     }
     
     public func log(_ message: LogMessage) {

@@ -24,7 +24,7 @@ public protocol LogMessage {
 
 
 
-public struct ComplexMessage: Codable, LogMessage {
+public struct ComplexMessage: Codable, LogMessage, Hashable, Equatable {
     
     public var description: String {
         return ""
@@ -41,7 +41,6 @@ public struct ComplexMessage: Codable, LogMessage {
     
     public var timestamp: Date = Date()
     
-    
 }
 
 fileprivate struct ProcessIdentification {
@@ -51,8 +50,7 @@ fileprivate struct ProcessIdentification {
     public let processName: String
     public let processID: Int32
 
-    private init()
-    {
+    private init() {
         let process = ProcessInfo.processInfo
         processName = process.processName
         processID = process.processIdentifier

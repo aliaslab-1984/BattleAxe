@@ -28,6 +28,24 @@ public final class LogService {
         providers.append(provider)
     }
     
+    /// Adds a new LogProvider object to the list.
+    public static func unregister(provider: LogProvider) {
+        guard let index = providers.firstIndex(where: { (item) -> Bool in
+            item.logIdentifier == provider.logIdentifier
+        }) else {
+            return
+        }
+        
+        providers.remove(at: index)
+    }
+    
+    public static func empty() {
+        self.providers = []
+    }
+    
+    /// The currently registered providers
+    public static var currentProviders: [LogProvider] { return providers }
+    
     /// Convenience method. Calls log only if the build configuration is set to DEBUG.
     /// It calls verbose(), debug() ... depending on the `LogSeverity` specified at the begining.
     /// - Parameters:
@@ -41,9 +59,10 @@ public final class LogService {
                         filename: String = #file,
                         funcName: String = #function,
                         line: Int = #line) {
-        
         #if DEBUG
-        log(severity, object, filename: filename, funcName: funcName, line: line)
+            log(severity, object, filename: filename, funcName: funcName, line: line)
+        #else
+            return
         #endif
     }
     

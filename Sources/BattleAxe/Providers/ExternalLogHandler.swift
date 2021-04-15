@@ -23,6 +23,8 @@ public protocol LogListener: AnyObject {
 /// In this case, the app decides what to do with logs.
 public class ExternalLogHandler: LogProvider {
     
+    public var logIdentifier: String = "External Log Handler Identifier"
+    
     private weak var listener: LogListener? = nil
     
     func setListener(listener: LogListener?) {

@@ -9,6 +9,7 @@ import Foundation
 import BattleAxe
 
 final class MockConsoleLogger: LogProvider {
+    var logIdentifier: String = "MockConsole Logger"
     
     func log(_ message: LogMessage) {
         lastMessage = message

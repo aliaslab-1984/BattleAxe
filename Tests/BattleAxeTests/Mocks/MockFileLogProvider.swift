@@ -12,6 +12,7 @@ final class MockFileLogProvider: LogProvider {
     
     private var dateFormatter: DateFormatter
     private var fileWriter: FileWriter
+    public var logIdentifier: String = "Mock FileLogProvider"
     
     public init(dateFormatter: DateFormatter, fileWriter: FileWriter) {
         self.dateFormatter = dateFormatter

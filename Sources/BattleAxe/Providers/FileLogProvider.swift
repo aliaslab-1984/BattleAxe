@@ -2,12 +2,17 @@ import Foundation
 
 public struct FileLogProvider: LogProvider {
     
+    public var logIdentifier: String
+    
     private var dateFormatter: DateFormatter
     private var fileWriter: FileWriter
     
-    public init(dateFormatter: DateFormatter, fileWriter: FileWriter) {
+    public init(dateFormatter: DateFormatter,
+                fileWriter: FileWriter,
+                identifier: String = "Default FileLogProvider") {
         self.dateFormatter = dateFormatter
         self.fileWriter = fileWriter
+        self.logIdentifier = identifier
     }
     
     public func log(_ severity: LogSeverity, message: String, file: String, function: String, line: Int) {
