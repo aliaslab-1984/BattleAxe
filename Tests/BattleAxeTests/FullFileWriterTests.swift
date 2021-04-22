@@ -170,7 +170,7 @@ final class FullFileWriterTests: XCTestCase {
         ("testOSLogPerformances", testOSLogPerformances),
         ("testConsoleLogPerformances", testConsoleLogPerformances),
         ("testMultipleProviderPerformances", testMultipleProviderPerformances),
-        ("testDeletion", testDeletion)
+        // ("testDeletion", testDeletion)
     ]
     
 }
