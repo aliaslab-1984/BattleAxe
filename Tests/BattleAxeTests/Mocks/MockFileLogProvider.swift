@@ -20,7 +20,7 @@ final class MockFileLogProvider: LogProvider {
     }
     
     func log(_ message: LogMessage) {
-        fileWriter.write(message.payload)
+        fileWriter.write(message.payload + " " + message.severity.prettyDescription)
     }
     
 }

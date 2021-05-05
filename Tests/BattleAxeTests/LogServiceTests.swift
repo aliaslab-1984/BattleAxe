@@ -26,12 +26,14 @@ final class LogServiceTests: XCTestCase {
         LogService.register(provider: ConsoleLogProvider(dateFormatter: dateFormatter))
         LogService.shared.debug(message)
         
+        let expectedMessage = message + " " + LogSeverity.debug.prettyDescription
+        
         XCTAssertNotNil(fileWriter.lastPrintedMessage)
-        XCTAssertEqual(fileWriter.lastPrintedMessage, message)
+        XCTAssertEqual(fileWriter.lastPrintedMessage, expectedMessage)
         
         LogService.shared.log(.debug, message)
         XCTAssertNotNil(fileWriter.lastPrintedMessage)
-        XCTAssertEqual(fileWriter.lastPrintedMessage, message)
+        XCTAssertEqual(fileWriter.lastPrintedMessage, expectedMessage)
     }
     
     func testAllSeveritiesLogging() {
@@ -48,8 +50,10 @@ final class LogServiceTests: XCTestCase {
             LogService.shared.log(severity, message)
         }
         
+        let expectedMessage = message + " " + LogSeverity.allCases.last!.prettyDescription
+        
         XCTAssertNotNil(fileWriter.lastPrintedMessage)
-        XCTAssertEqual(fileWriter.lastPrintedMessage, message)
+        XCTAssertEqual(fileWriter.lastPrintedMessage, expectedMessage)
     }
     
     func testAllLoggingShortcuts() {
@@ -75,8 +79,11 @@ final class LogServiceTests: XCTestCase {
             case .warning:
                 LogService.shared.warning(message)
             }
+            
+            let expectedMessage = message + " " + severity.prettyDescription
+            
             XCTAssertNotNil(fileWriter.lastPrintedMessage)
-            XCTAssertEqual(fileWriter.lastPrintedMessage, message)
+            XCTAssertEqual(fileWriter.lastPrintedMessage, expectedMessage)
         }
     }
     
