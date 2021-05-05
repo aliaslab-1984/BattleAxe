@@ -3,7 +3,7 @@
 ![Swift](https://github.com/aliaslab-1984/BattleAxe/workflows/Swift/badge.svg)
 [![SwiftPM compatible](https://img.shields.io/badge/SwiftPM-compatible-brightgreen.svg)](https://swift.org/package-manager/)
 
-Welcome to BattleAxe, an easy and super extstensible Logger for iOS and MacOS.
+Welcome to BattleAxe, an easy and super extstensible Logger for iOS and macOS.
 
 To start using BattleAxe follow this steps:
 
@@ -27,7 +27,7 @@ LogService.shared.debug("Your first log!")
 
 --------
 
-BattleAxe offers a LogRotation feature built into any FileWriter. Logs could be rotated following three main criteria:
+BattleAxe offers a `LogRotation` feature built into any `FileWriter`. Logs could be rotated following three main criteria:
 
 - Log Size;
 - Log file Age;
@@ -43,3 +43,30 @@ RotatorConfiguration(maxSize: 10.kiloBytes, maxFiles: 2)
 
 To make things easier BattleAxe offers some cool extensions to make your code even more readable, such as from days/hours to seconds, from int to kilo/Mega/Gigabytes.
 
+```swift
+/// This creates the number of bytes that corresponds to 10 megabytes. (1024 * 1024 * 10 in this case)
+let fileSize = 10.megaBytes
+```
+--------
+
+Another great feature offered by BattleAxe is the ability to gather all the relevant information from each log entry, in fact, each log is transformed by the `LogService` into a `LogMessage`.
+A `LogMessage` is a protocol that describes all the required information that a `LogEntry` should hold.
+
+```swift
+public protocol LogMessage {
+    
+    var description: String { get }
+    
+    var callingThread: String { get }
+    var processId: Int32 { get }
+    var payload: String { get }
+    var severity: LogSeverity { get }
+    var callingFilePath: String { get }
+    var callingFileLine: Int { get }
+    var callingStackFrame: String { get }
+    var callingThreadID: UInt64 { get }
+    var timestamp: Date { get }
+}
+```
+
+All of these information could be useful when you write your own `LogProvider` object.
