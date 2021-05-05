@@ -7,6 +7,9 @@
 
 import Foundation
 
+/**
+ Describes all the information needed to create a LogMessage.
+ */
 public protocol LogMessage {
     
     var description: String { get }
@@ -22,8 +25,10 @@ public protocol LogMessage {
     var timestamp: Date { get }
 }
 
-
-
+/**
+ This is the default LogMessage implementation.
+ Note: *It automatically gathers the calling thread and process ID.*
+ */
 public struct LoggedMessage: Codable, LogMessage, Hashable, Equatable {
     
     public var description: String {
@@ -43,6 +48,9 @@ public struct LoggedMessage: Codable, LogMessage, Hashable, Equatable {
     
 }
 
+/**
+ Helper struct that gathers the current ProcessIdentification and encapsulates the process's name and identifier.
+ */
 fileprivate struct ProcessIdentification {
     // this ensures we only look up process info once
     public static let current = ProcessIdentification()

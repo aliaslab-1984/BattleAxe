@@ -92,6 +92,14 @@ public final class LogService {
         }
     }
     
+    
+    /// Tells to all the providers that an event with`LogSeverity.info` has occurred.
+    /// If the minimum severity is higher than `.info` or the logging is disabled, the method returns immediatly.
+    /// - Parameters:
+    ///   - object: The message sent.
+    ///   - filename: The name of the file from where it is getting called.
+    ///   - funcName: The method name from which it is getting called.
+    ///   - line: The line from where it's getting called.
     public func info(_ object: @autoclosure Dump,
                      filename: String = #file,
                      funcName: String = #function,
@@ -108,6 +116,13 @@ public final class LogService {
                   funcName: funcName)
     }
     
+    /// Tells to all the providers that an event with`LogSeverity.debug` has occurred.
+    /// If the minimum severity is higher than `.debug` or the logging is disabled, the method returns immediatly.
+    /// - Parameters:
+    ///   - object: The message sent.
+    ///   - filename: The name of the file from where it is getting called.
+    ///   - funcName: The method name from which it is getting called.
+    ///   - line: The line from where it's getting called.
     public func debug(_ object: @autoclosure Dump,
                filename: String = #file,
                line: Int = #line,
@@ -124,6 +139,13 @@ public final class LogService {
                   funcName: funcName)
     }
     
+    /// Tells to all the providers that an event with`LogSeverity.verbose` has occurred.
+    /// If the minimum severity is higher than `.verbose` or the logging is disabled, the method returns immediatly.
+    /// - Parameters:
+    ///   - object: The message sent.
+    ///   - filename: The name of the file from where it is getting called.
+    ///   - funcName: The method name from which it is getting called.
+    ///   - line: The line from where it's getting called.
     public func verbose(_ object: @autoclosure Dump,
                  filename: String = #file,
                  line: Int = #line,
@@ -140,6 +162,13 @@ public final class LogService {
                   funcName: funcName)
     }
     
+    /// Tells to all the providers that an event with`LogSeverity.warning` has occurred.
+    /// If the minimum severity is higher than `.warning` or the logging is disabled, the method returns immediatly.
+    /// - Parameters:
+    ///   - object: The message sent.
+    ///   - filename: The name of the file from where it is getting called.
+    ///   - funcName: The method name from which it is getting called.
+    ///   - line: The line from where it's getting called.
     public func warning(_ object: @autoclosure Dump,
                  filename: String = #file,
                  line: Int = #line,
@@ -156,6 +185,13 @@ public final class LogService {
                   funcName: funcName)
     }
     
+    /// Tells to all the providers that an event with`LogSeverity.error` has occurred.
+    /// If the minimum severity is higher than `.error` or the logging is disabled, the method returns immediatly.
+    /// - Parameters:
+    ///   - object: The message sent.
+    ///   - filename: The name of the file from where it is getting called.
+    ///   - funcName: The method name from which it is getting called.
+    ///   - line: The line from where it's getting called.
     public func error(_ object: @autoclosure Dump,
                filename: String = #file,
                line: Int = #line,
