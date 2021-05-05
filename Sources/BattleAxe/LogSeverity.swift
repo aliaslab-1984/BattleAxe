@@ -15,6 +15,7 @@ public enum LogSeverity: Int, Comparable, CaseIterable, Codable {
 
 extension LogSeverity {
     
+    /// Returns the corresponding emoji for the LogSeverity.
     public var emoji: String {
         switch self {
         case .info:
@@ -48,7 +49,7 @@ extension LogSeverity: CustomStringConvertible {
         }
     }
     
-    /// A pretty printed composition of the emojii and the description for the severity.
+    /// A pretty printed composition of the emoji and the description for the severity.
     public var prettyDescription: String {
         
         return self.emoji + " " + description
