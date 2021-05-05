@@ -102,7 +102,7 @@ public final class LogService {
         }
         
         propagate(object(),
-                  .error,
+                  .info,
                   filename: LogService.fileName(filePath: filename),
                   line: line,
                   funcName: funcName)
@@ -118,7 +118,7 @@ public final class LogService {
         }
         
         propagate(object(),
-                  .error,
+                  .debug,
                   filename: LogService.fileName(filePath: filename),
                   line: line,
                   funcName: funcName)
@@ -134,7 +134,7 @@ public final class LogService {
         }
         
         propagate(object(),
-                  .error,
+                  .verbose,
                   filename: LogService.fileName(filePath: filename),
                   line: line,
                   funcName: funcName)
@@ -150,7 +150,7 @@ public final class LogService {
         }
         
         propagate(object(),
-                  .error,
+                  .warning,
                   filename: LogService.fileName(filePath: filename),
                   line: line,
                   funcName: funcName)
@@ -183,7 +183,7 @@ public final class LogService {
         }
         
         propagate(object(),
-                  .error,
+                  severity,
                   filename: LogService.fileName(filePath: filename),
                   line: line,
                   funcName: funcName)
