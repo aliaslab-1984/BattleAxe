@@ -206,7 +206,7 @@ public final class LogService {
             oggetto = object
         }
         
-        let entity = ComplexMessage(payload: String(describing: oggetto), severity: severity, callingFilePath: filename, callingFileLine: line, callingStackFrame: funcName, callingThreadID: threadID)
+        let entity = LoggedMessage(payload: String(describing: oggetto), severity: severity, callingFilePath: filename, callingFileLine: line, callingStackFrame: funcName, callingThreadID: threadID)
         
         LogService.providers.forEach {
             $0.log(entity)

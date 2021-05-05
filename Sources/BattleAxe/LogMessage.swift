@@ -24,7 +24,7 @@ public protocol LogMessage {
 
 
 
-public struct ComplexMessage: Codable, LogMessage, Hashable, Equatable {
+public struct LoggedMessage: Codable, LogMessage, Hashable, Equatable {
     
     public var description: String {
         return ""
