@@ -1,6 +1,6 @@
 import Foundation
 
-public enum LogSeverity: Int, Comparable, CaseIterable {
+public enum LogSeverity: Int, Comparable, CaseIterable, Codable {
     
     case verbose = 10
     case debug = 20
@@ -8,13 +8,14 @@ public enum LogSeverity: Int, Comparable, CaseIterable {
     case warning = 40
     case error = 50
     
-    public static func <(lhs: LogSeverity, rhs: LogSeverity) -> Bool {
+    public static func < (lhs: LogSeverity, rhs: LogSeverity) -> Bool {
         return lhs.rawValue < rhs.rawValue
     }
 }
 
 extension LogSeverity {
     
+    /// Returns the corresponding emoji for the LogSeverity.
     public var emoji: String {
         switch self {
         case .info:
@@ -48,7 +49,7 @@ extension LogSeverity: CustomStringConvertible {
         }
     }
     
-    /// A pretty printed composition of the emojii and the description for the severity.
+    /// A pretty printed composition of the emoji and the description for the severity.
     public var prettyDescription: String {
         
         return self.emoji + " " + description

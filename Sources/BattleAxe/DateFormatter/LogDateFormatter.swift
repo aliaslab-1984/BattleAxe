@@ -10,7 +10,7 @@ public final class LogDateFormatter: DateFormatter {
 }
 
 extension DateFormatter {
-    func getCurrentDateAsString() -> String {
-        return self.string(from: Date())
+    func getCurrentDateAsString(date: Date = .init()) -> String {
+        return self.string(from: date)
     }
 }

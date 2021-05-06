@@ -17,6 +17,8 @@ public final class LogService {
     /// Whether the logging is enabled or not.
     public var enabled: Bool = true
     
+    public typealias Dump = () -> Any
+    
     private init(providers: [LogProvider]) {
         LogService.providers = providers
     }
@@ -24,6 +26,44 @@ public final class LogService {
     /// Adds a new LogProvider object to the list.
     public static func register(provider: LogProvider) {
         providers.append(provider)
+    }
+    
+    /// Adds a new LogProvider object to the list.
+    public static func unregister(provider: LogProvider) {
+        guard let index = providers.firstIndex(where: { (item) -> Bool in
+            item.logIdentifier == provider.logIdentifier
+        }) else {
+            return
+        }
+        
+        providers.remove(at: index)
+    }
+    
+    public static func empty() {
+        self.providers = []
+    }
+    
+    /// The currently registered providers
+    public static var currentProviders: [LogProvider] { return providers }
+    
+    /// Convenience method. Calls log only if the build configuration is set to DEBUG.
+    /// It calls verbose(), debug() ... depending on the `LogSeverity` specified at the begining.
+    /// - Parameters:
+    ///   - severity: The log's severity.
+    ///   - object: The message that should be displayed.
+    ///   - filename: The filename
+    ///   - funcName: The method name.
+    ///   - line: The file's line.
+    public func ifDebug(_ severity: LogSeverity,
+                        _ object: @autoclosure @escaping Dump,
+                        filename: String = #file,
+                        funcName: String = #function,
+                        line: Int = #line) {
+        #if DEBUG
+            log(severity, object, filename: filename, funcName: funcName, line: line)
+        #else
+            return
+        #endif
     }
     
     /// Convenience method. It calls verbose(), debug() ... depending on the `LogSeverity` specified at the begining.
@@ -34,56 +74,56 @@ public final class LogService {
     ///   - funcName: The method name.
     ///   - line: The file's line.
     public func log(_ severity: LogSeverity,
-                    _ object: Any,
+                    _ object: @autoclosure @escaping Dump,
                     filename: String = #file,
                     funcName: String = #function,
                     line: Int = #line) {
         switch severity {
         case .verbose:
-            self.verbose(object,
-                         filename: filename,
-                         line: line,
-                         funcName: funcName)
+            self.evaluate(severity: .verbose, object, filename: filename, line: line, funcName: funcName)
         case .debug:
-            self.debug(object,
-                         filename: filename,
-                         line: line,
-                         funcName: funcName)
+            self.evaluate(severity: .debug, object, filename: filename, line: line, funcName: funcName)
         case .info:
-            self.info(object,
-                         filename: filename,
-                         funcName: funcName,
-                         line: line)
+            self.evaluate(severity: .info, object, filename: filename, line: line, funcName: funcName)
         case .warning:
-            self.warning(object,
-                         filename: filename,
-                         line: line,
-                         funcName: funcName)
+            self.evaluate(severity: .warning, object, filename: filename, line: line, funcName: funcName)
         case .error:
-            self.error(object,
-                       filename: filename,
-                       line: line,
-                       funcName: funcName)
+            self.evaluate(severity: .error, object, filename: filename, line: line, funcName: funcName)
         }
     }
     
-    public func info(_ object: Any,
-              filename: String = #file,
-              funcName: String = #function,
-              line: Int = #line) {
+    
+    /// Tells to all the providers that an event with`LogSeverity.info` has occurred.
+    /// If the minimum severity is higher than `.info` or the logging is disabled, the method returns immediatly.
+    /// - Parameters:
+    ///   - object: The message sent.
+    ///   - filename: The name of the file from where it is getting called.
+    ///   - funcName: The method name from which it is getting called.
+    ///   - line: The line from where it's getting called.
+    public func info(_ object: @autoclosure Dump,
+                     filename: String = #file,
+                     funcName: String = #function,
+                     line: Int = #line) {
         
-        guard minimumSeverity <= .info, enabled else {
+        guard minimumSeverity <= .info, enabled  else {
             return
         }
         
-        propagate(object,
+        propagate(object(),
                   .info,
                   filename: LogService.fileName(filePath: filename),
                   line: line,
                   funcName: funcName)
     }
     
-    public func debug(_ object: Any,
+    /// Tells to all the providers that an event with`LogSeverity.debug` has occurred.
+    /// If the minimum severity is higher than `.debug` or the logging is disabled, the method returns immediatly.
+    /// - Parameters:
+    ///   - object: The message sent.
+    ///   - filename: The name of the file from where it is getting called.
+    ///   - funcName: The method name from which it is getting called.
+    ///   - line: The line from where it's getting called.
+    public func debug(_ object: @autoclosure Dump,
                filename: String = #file,
                line: Int = #line,
                funcName: String = #function) {
@@ -92,14 +132,21 @@ public final class LogService {
             return
         }
         
-        propagate(object,
+        propagate(object(),
                   .debug,
                   filename: LogService.fileName(filePath: filename),
                   line: line,
                   funcName: funcName)
     }
     
-    public func verbose(_ object: Any,
+    /// Tells to all the providers that an event with`LogSeverity.verbose` has occurred.
+    /// If the minimum severity is higher than `.verbose` or the logging is disabled, the method returns immediatly.
+    /// - Parameters:
+    ///   - object: The message sent.
+    ///   - filename: The name of the file from where it is getting called.
+    ///   - funcName: The method name from which it is getting called.
+    ///   - line: The line from where it's getting called.
+    public func verbose(_ object: @autoclosure Dump,
                  filename: String = #file,
                  line: Int = #line,
                  funcName: String = #function) {
@@ -108,14 +155,21 @@ public final class LogService {
             return
         }
         
-        propagate(object,
+        propagate(object(),
                   .verbose,
                   filename: LogService.fileName(filePath: filename),
                   line: line,
                   funcName: funcName)
     }
     
-    public func warning(_ object: Any,
+    /// Tells to all the providers that an event with`LogSeverity.warning` has occurred.
+    /// If the minimum severity is higher than `.warning` or the logging is disabled, the method returns immediatly.
+    /// - Parameters:
+    ///   - object: The message sent.
+    ///   - filename: The name of the file from where it is getting called.
+    ///   - funcName: The method name from which it is getting called.
+    ///   - line: The line from where it's getting called.
+    public func warning(_ object: @autoclosure Dump,
                  filename: String = #file,
                  line: Int = #line,
                  funcName: String = #function) {
@@ -124,14 +178,21 @@ public final class LogService {
             return
         }
         
-        propagate(object,
+        propagate(object(),
                   .warning,
                   filename: LogService.fileName(filePath: filename),
                   line: line,
                   funcName: funcName)
     }
     
-    public func error(_ object: Any,
+    /// Tells to all the providers that an event with`LogSeverity.error` has occurred.
+    /// If the minimum severity is higher than `.error` or the logging is disabled, the method returns immediatly.
+    /// - Parameters:
+    ///   - object: The message sent.
+    ///   - filename: The name of the file from where it is getting called.
+    ///   - funcName: The method name from which it is getting called.
+    ///   - line: The line from where it's getting called.
+    public func error(_ object: @autoclosure Dump,
                filename: String = #file,
                line: Int = #line,
                funcName: String = #function) {
@@ -140,8 +201,25 @@ public final class LogService {
             return
         }
         
-        propagate(object,
+        propagate(object(),
                   .error,
+                  filename: LogService.fileName(filePath: filename),
+                  line: line,
+                  funcName: funcName)
+    }
+    
+    private func evaluate(severity: LogSeverity,
+                          _ object: @autoclosure Dump,
+                          filename: String = #file,
+                          line: Int = #line,
+                          funcName: String = #function) {
+        
+        guard minimumSeverity <= severity, enabled  else {
+            return
+        }
+        
+        propagate(object(),
+                  severity,
                   filename: LogService.fileName(filePath: filename),
                   line: line,
                   funcName: funcName)
@@ -153,8 +231,21 @@ public final class LogService {
                            filename: String = #file,
                            line: Int = #line,
                            funcName: String = #function) {
+        
+        var threadID: UInt64 = 0
+        pthread_threadid_np(nil, &threadID)
+        
+        let oggetto: Any
+        if let obj = object as? Dump {
+            oggetto = obj()
+        } else {
+            oggetto = object
+        }
+        
+        let entity = LoggedMessage(payload: String(describing: oggetto), severity: severity, callingFilePath: filename, callingFileLine: line, callingStackFrame: funcName, callingThreadID: threadID)
+        
         LogService.providers.forEach {
-            $0.log(severity, message: ("\(object)"), file: LogService.fileName(filePath: filename), function: funcName, line: line)
+            $0.log(entity)
         }
     }
     

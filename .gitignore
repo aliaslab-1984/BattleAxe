@@ -3,3 +3,7 @@
 /Packages
 /*.xcodeproj
 xcuserdata/
+sonar-project.properties
+.scannerwork
+coverage.sh
+generic.xml

@@ -12,7 +12,7 @@ public struct FileWriterConfiguration {
     public static func defaultConfig(name: String,
                                      queueName: String,
                                      appGroup: String? = nil) -> FileWriterConfiguration {
-        return FileWriterConfiguration(filename: name, appGroup: appGroup, queueName: queueName, rotationConfiguration: .standard, fileManager: .default, fileSeeker: BAFileController(fileSystemController: FileManager.default))
+        return FileWriterConfiguration(filename: name, appGroup: appGroup, queueName: queueName, rotationConfiguration: .standard, fileManager: .standard, fileSeeker: BAFileController(fileSystemController: FileManager.default))
     }
     
     public init(filename: String,
@@ -20,7 +20,7 @@ public struct FileWriterConfiguration {
                 queueName: String,
                 rotationConfiguration: RotatorConfiguration,
                 fileManager: BAFileManager,
-                fileSeeker: BAFileSeeker) {
+                fileSeeker: BAFileSeeker) {
         self.filename = filename
         self.appGroup = appGroup
         self.queueName = queueName

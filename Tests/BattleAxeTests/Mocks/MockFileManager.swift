@@ -97,9 +97,7 @@ final class MockedFileManager: FileSystemController {
     }
     
     func removeItem(atPath path: String) throws {
-        guard let item = files.first(where: { (file) -> Bool in
-            file.path == path
-        }) else {
+        guard let item = files.first(where: { $0.path == path }) else {
             throw ManagerError.fileNotFound
         }
         

@@ -36,11 +36,41 @@ final class ExtensionsTest: XCTestCase {
         XCTAssert(3600.0.secondsToHours == 1)
     }
     
+    func testDateFormatter() {
+        
+        let currentDate = Date()
+        let formatter = LogDateFormatter(dateFormat: "yyyy-MM-dd")
+        
+        let calendar = Calendar.current
+        let year = calendar.component(.year, from: currentDate)
+        let month = calendar.component(.month, from: currentDate)
+        let day = calendar.component(.day, from: currentDate)
+        
+        let stringMonth: String
+        if month < 10 {
+            stringMonth = "0\(month)"
+        } else {
+            stringMonth = "\(month)"
+        }
+        
+        let stringDay: String
+        if day < 10 {
+            stringDay = "0\(day)"
+        } else {
+            stringDay = "\(day)"
+        }
+        
+        let expectedFormat = "\(year)-\(stringMonth)-\(stringDay)"
+        
+        XCTAssert(expectedFormat == formatter.getCurrentDateAsString(date: currentDate))
+    }
+    
     
     static var allTests = [
         ("testIntExtensions", testIntExtensions),
         ("testUIntExtensions", testUIntExtensions),
-        ("testDoubleExtensions", testDoubleExtensions)
+        ("testDoubleExtensions", testDoubleExtensions),
+        ("testDateFormatter", testDateFormatter)
     ]
     
 }
