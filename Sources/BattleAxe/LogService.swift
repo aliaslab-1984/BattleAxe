@@ -78,18 +78,7 @@ public final class LogService {
                     filename: String = #file,
                     funcName: String = #function,
                     line: Int = #line) {
-        switch severity {
-        case .verbose:
-            self.evaluate(severity: .verbose, object, filename: filename, line: line, funcName: funcName)
-        case .debug:
-            self.evaluate(severity: .debug, object, filename: filename, line: line, funcName: funcName)
-        case .info:
-            self.evaluate(severity: .info, object, filename: filename, line: line, funcName: funcName)
-        case .warning:
-            self.evaluate(severity: .warning, object, filename: filename, line: line, funcName: funcName)
-        case .error:
-            self.evaluate(severity: .error, object, filename: filename, line: line, funcName: funcName)
-        }
+        self.evaluate(severity: severity, object, filename: filename, line: line, funcName: funcName)
     }
     
     
