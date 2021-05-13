@@ -126,7 +126,7 @@ final class FullFileWriterTests: XCTestCase {
         let expectedFile = "file"
         let line = 44
         
-        logprovider.log(.debug, message: message, file: expectedFile, function: expectedFunc, line: line)
+        logprovider.log(.debug, message: message, file: expectedFile, function: expectedFunc, line: line, channel: nil)
         
         XCTAssertNotNil(fileWriter.lastPrintedMessage)
         

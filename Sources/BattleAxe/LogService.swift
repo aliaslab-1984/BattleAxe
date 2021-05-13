@@ -17,6 +17,9 @@ public final class LogService {
     /// Whether the logging is enabled or not.
     public var enabled: Bool = true
     
+    /// The default channel
+    public static let defaultChannel: String = "BattleAxe 🪓"
+    
     public typealias Dump = () -> Any
     
     private init(providers: [LogProvider]) {
@@ -75,10 +78,16 @@ public final class LogService {
     ///   - line: The file's line.
     public func log(_ severity: LogSeverity,
                     _ object: @autoclosure @escaping Dump,
+                    channel: String? = nil,
                     filename: String = #file,
                     funcName: String = #function,
                     line: Int = #line) {
-        self.evaluate(severity: severity, object, filename: filename, line: line, funcName: funcName)
+        self.evaluate(severity: severity,
+                      object,
+                      channel: channel ?? Self.defaultChannel,
+                      filename: filename,
+                      line: line,
+                      funcName: funcName)
     }
     
     
@@ -90,6 +99,7 @@ public final class LogService {
     ///   - funcName: The method name from which it is getting called.
     ///   - line: The line from where it's getting called.
     public func info(_ object: @autoclosure Dump,
+                     channel: String? = nil,
                      filename: String = #file,
                      funcName: String = #function,
                      line: Int = #line) {
@@ -100,6 +110,7 @@ public final class LogService {
         
         propagate(object(),
                   .info,
+                  channel: channel ?? Self.defaultChannel,
                   filename: LogService.fileName(filePath: filename),
                   line: line,
                   funcName: funcName)
@@ -113,9 +124,10 @@ public final class LogService {
     ///   - funcName: The method name from which it is getting called.
     ///   - line: The line from where it's getting called.
     public func debug(_ object: @autoclosure Dump,
-               filename: String = #file,
-               line: Int = #line,
-               funcName: String = #function) {
+                      channel: String? = nil,
+                      filename: String = #file,
+                      line: Int = #line,
+                      funcName: String = #function) {
         
         guard minimumSeverity <= .debug, enabled  else {
             return
@@ -123,6 +135,7 @@ public final class LogService {
         
         propagate(object(),
                   .debug,
+                  channel: channel ?? Self.defaultChannel,
                   filename: LogService.fileName(filePath: filename),
                   line: line,
                   funcName: funcName)
@@ -136,9 +149,10 @@ public final class LogService {
     ///   - funcName: The method name from which it is getting called.
     ///   - line: The line from where it's getting called.
     public func verbose(_ object: @autoclosure Dump,
-                 filename: String = #file,
-                 line: Int = #line,
-                 funcName: String = #function) {
+                        channel: String? = nil,
+                        filename: String = #file,
+                        line: Int = #line,
+                        funcName: String = #function) {
         
         guard minimumSeverity <= .verbose, enabled  else {
             return
@@ -146,6 +160,7 @@ public final class LogService {
         
         propagate(object(),
                   .verbose,
+                  channel: channel ?? Self.defaultChannel,
                   filename: LogService.fileName(filePath: filename),
                   line: line,
                   funcName: funcName)
@@ -159,9 +174,10 @@ public final class LogService {
     ///   - funcName: The method name from which it is getting called.
     ///   - line: The line from where it's getting called.
     public func warning(_ object: @autoclosure Dump,
-                 filename: String = #file,
-                 line: Int = #line,
-                 funcName: String = #function) {
+                        channel: String? = nil,
+                        filename: String = #file,
+                        line: Int = #line,
+                        funcName: String = #function) {
         
         guard minimumSeverity <= .warning, enabled  else {
             return
@@ -169,6 +185,7 @@ public final class LogService {
         
         propagate(object(),
                   .warning,
+                  channel: channel ?? Self.defaultChannel,
                   filename: LogService.fileName(filePath: filename),
                   line: line,
                   funcName: funcName)
@@ -182,9 +199,10 @@ public final class LogService {
     ///   - funcName: The method name from which it is getting called.
     ///   - line: The line from where it's getting called.
     public func error(_ object: @autoclosure Dump,
-               filename: String = #file,
-               line: Int = #line,
-               funcName: String = #function) {
+                      channel: String? = nil,
+                      filename: String = #file,
+                      line: Int = #line,
+                      funcName: String = #function) {
         
         guard minimumSeverity <= .error, enabled  else {
             return
@@ -192,6 +210,7 @@ public final class LogService {
         
         propagate(object(),
                   .error,
+                  channel: channel ?? Self.defaultChannel,
                   filename: LogService.fileName(filePath: filename),
                   line: line,
                   funcName: funcName)
@@ -199,6 +218,7 @@ public final class LogService {
     
     private func evaluate(severity: LogSeverity,
                           _ object: @autoclosure Dump,
+                          channel: String,
                           filename: String = #file,
                           line: Int = #line,
                           funcName: String = #function) {
@@ -209,6 +229,7 @@ public final class LogService {
         
         propagate(object(),
                   severity,
+                  channel: channel,
                   filename: LogService.fileName(filePath: filename),
                   line: line,
                   funcName: funcName)
@@ -217,6 +238,7 @@ public final class LogService {
     /// Propagates the log to all the registered providers.
     private func propagate(_ object: Any,
                            _ severity: LogSeverity,
+                           channel: String,
                            filename: String = #file,
                            line: Int = #line,
                            funcName: String = #function) {
@@ -231,7 +253,7 @@ public final class LogService {
             oggetto = object
         }
         
-        let entity = LoggedMessage(payload: String(describing: oggetto), severity: severity, callingFilePath: filename, callingFileLine: line, callingStackFrame: funcName, callingThreadID: threadID)
+        let entity = LoggedMessage(payload: String(describing: oggetto), severity: severity, callingFilePath: filename, callingFileLine: line, callingStackFrame: funcName, callingThreadID: threadID, channel: channel)
         
         LogService.providers.forEach {
             $0.log(entity)

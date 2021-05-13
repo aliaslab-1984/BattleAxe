@@ -3,6 +3,7 @@ import Foundation
 public struct FileLogProvider: LogProvider {
     
     public var logIdentifier: String
+    public var channels: Set<String> = .init([LogService.defaultChannel])
     
     private var dateFormatter: DateFormatter
     private var fileWriter: FileWriter
@@ -15,15 +16,32 @@ public struct FileLogProvider: LogProvider {
         self.logIdentifier = identifier
     }
     
-    public func log(_ severity: LogSeverity, message: String, file: String, function: String, line: Int) {
-        if let _ = fileWriter as? BriefLogFileWriter {
-            fileWriter.write("[\(severity.prettyDescription) \(file):\(function):\(line)] \(message)")
-        } else {
-            fileWriter.write("[\(severity.prettyDescription) \(dateFormatter.getCurrentDateAsString()) \(file):\(function):\(line)] \(message)")
-        }
+    public func log(_ severity: LogSeverity,
+                    message: String,
+                    file: String,
+                    function: String,
+                    line: Int,
+                    channel: String?) {
+        let message = LoggedMessage(payload: message, severity: severity, callingFilePath: file, callingFileLine: line, callingStackFrame: function, callingThreadID: UInt64(ProcessIdentification.current.processID), channel: channel ?? LogService.defaultChannel)
+        writeLog(message: message)
     }
     
     public func log(_ message: LogMessage) {
+        writeLog(message: message)
+    }
+    
+    private func evaluate(_ message: LogMessage) {
+        guard !channels.isEmpty else {
+            writeLog(message: message)
+            return
+        }
+        
+        if channels.contains(message.channel) {
+            writeLog(message: message)
+        }
+    }
+    
+    private func writeLog(message: LogMessage) {
         if let _ = fileWriter as? BriefLogFileWriter {
             fileWriter.write("[\(message.severity.prettyDescription) \(message.callingFilePath):\(message.callingStackFrame):\(message.callingFileLine)] \(message.payload)")
         } else {

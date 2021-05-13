@@ -14,7 +14,8 @@ public struct OSLogProvider: LogProvider {
     public var logIdentifier: String
     
     private var dateFormatter: DateFormatter
-    private var subsystem: String
+    public var channels: Set<String> = .init([LogService.defaultChannel])
+    public var subsystem: String
     
     public init(dateFormatter: DateFormatter,
                 subsystem: String = "",
@@ -25,7 +26,18 @@ public struct OSLogProvider: LogProvider {
     }
     
     public func log(_ message: LogMessage) {
-        let log = OSLog(subsystem: self.subsystem, category: "BattleAxe")
+        guard !channels.isEmpty else {
+            writeLog(with: message)
+            return
+        }
+        
+        if channels.contains(message.channel) {
+            writeLog(with: message)
+        }
+    }
+    
+    private func writeLog(with message: LogMessage) {
+        let log = OSLog(subsystem: self.subsystem, category: message.channel)
         let type = message.severity.toOSLogLevel()
         os_log("%{public}@", log: log, type: type, message.severity.emoji + " " + message.payload)
     }

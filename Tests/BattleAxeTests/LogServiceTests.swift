@@ -87,6 +87,32 @@ final class LogServiceTests: XCTestCase {
         }
     }
     
+    func testLogChannel() {
+        LogService.empty()
+        let message1 = "Ciao"
+        let message2 = "Ciao 2"
+        let channelName = "Channel"
+        let handler = MockConsoleLogger()
+        let handler2 = MockConsoleLogger()
+        handler2.channels = .init([channelName])
+        LogService.shared.minimumSeverity = .verbose
+        LogService.register(provider: handler)
+        LogService.register(provider: handler2)
+        LogService.shared.debug(message1)
+        
+        XCTAssertNil(handler2.lastMessage)
+        XCTAssertNotNil(handler.lastMessage)
+        XCTAssertEqual(handler.lastMessage?.payload, message1)
+        
+        
+        LogService.shared.log(.debug, message2, channel: channelName)
+        
+        XCTAssertNotNil(handler2.lastMessage)
+        XCTAssertNotNil(handler.lastMessage)
+        XCTAssertEqual(handler2.lastMessage?.payload, message2)
+        XCTAssertEqual(handler.lastMessage?.payload, message1)
+    }
+    
     func testLogDebug() {
 //        let listener = MockConsoleLogger()
 //        listener.lastMessage = nil
@@ -204,6 +230,7 @@ final class LogServiceTests: XCTestCase {
         ("testEmptyProviders", testEmptyProviders),
         ("testRemoveProvider", testRemoveProvider),
         ("testAllSeveritiesLogging", testAllSeveritiesLogging),
-        ("testAllLoggingShortcuts", testAllLoggingShortcuts)
+        ("testAllLoggingShortcuts", testAllLoggingShortcuts),
+        ("testLogChannel", testLogChannel)
     ]
 }

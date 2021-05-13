@@ -23,6 +23,7 @@ public protocol LogMessage {
     var callingStackFrame: String { get }
     var callingThreadID: UInt64 { get }
     var timestamp: Date { get }
+    var channel: String { get }
 }
 
 /**
@@ -43,7 +44,7 @@ public struct LoggedMessage: Codable, LogMessage, Hashable, Equatable {
     public var callingFileLine: Int
     public var callingStackFrame: String
     public var callingThreadID: UInt64
-    
+    public var channel: String
     public var timestamp: Date = Date()
     
 }
@@ -51,7 +52,7 @@ public struct LoggedMessage: Codable, LogMessage, Hashable, Equatable {
 /**
  Helper struct that gathers the current ProcessIdentification and encapsulates the process's name and identifier.
  */
-fileprivate struct ProcessIdentification {
+struct ProcessIdentification {
     // this ensures we only look up process info once
     public static let current = ProcessIdentification()
     

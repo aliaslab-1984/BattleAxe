@@ -10,6 +10,8 @@ import BattleAxe
 
 final class MockFileLogProvider: LogProvider {
     
+    public var channels: Set<String> = .init([LogService.defaultChannel])
+    
     private var dateFormatter: DateFormatter
     private var fileWriter: FileWriter
     public var logIdentifier: String = "Mock FileLogProvider"
