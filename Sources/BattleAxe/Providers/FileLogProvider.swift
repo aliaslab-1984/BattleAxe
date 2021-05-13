@@ -23,11 +23,11 @@ public struct FileLogProvider: LogProvider {
                     line: Int,
                     channel: String?) {
         let message = LoggedMessage(payload: message, severity: severity, callingFilePath: file, callingFileLine: line, callingStackFrame: function, callingThreadID: UInt64(ProcessIdentification.current.processID), channel: channel ?? LogService.defaultChannel)
-        writeLog(message: message)
+        evaluate(message)
     }
     
     public func log(_ message: LogMessage) {
-        writeLog(message: message)
+        evaluate(message)
     }
     
     private func evaluate(_ message: LogMessage) {
