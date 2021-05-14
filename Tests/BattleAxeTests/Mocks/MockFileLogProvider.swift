@@ -25,4 +25,12 @@ final class MockFileLogProvider: LogProvider {
         fileWriter.write(message.payload + " " + message.severity.prettyDescription)
     }
     
+    func addChannel(_ channel: String) {
+        channels.insert(channel)
+    }
+    
+    func removeChannel(_ channel: String) {
+        channels.remove(channel)
+    }
+    
 }

@@ -1,6 +1,6 @@
 import Foundation
 
-public struct FileLogProvider: LogProvider {
+public final class FileLogProvider: LogProvider {
     
     public var logIdentifier: String
     public var channels: Set<String> = .init([LogService.defaultChannel])
@@ -35,7 +35,19 @@ public struct FileLogProvider: LogProvider {
         evaluate(message)
     }
     
-    private func evaluate(_ message: LogMessage) {
+    public func addChannel(_ channel: String) {
+        channels.insert(channel)
+    }
+    
+    public func removeChannel(_ channel: String) {
+        channels.remove(channel)
+    }
+    
+}
+
+private extension FileLogProvider {
+    
+    func evaluate(_ message: LogMessage) {
         guard !channels.isEmpty else {
             writeLog(message: message)
             return
@@ -46,11 +58,11 @@ public struct FileLogProvider: LogProvider {
         }
     }
     
-    private func writeLog(message: LogMessage) {
+    func writeLog(message: LogMessage) {
         if let _ = fileWriter as? BriefLogFileWriter {
             fileWriter.write("[\(message.severity.prettyDescription) \(message.callingFilePath):\(message.callingStackFrame):\(message.callingFileLine)] \(message.payload)")
         } else {
-            let finalMessage = LogMessageComposer.compose(message, using: ingredients, dateFormatter: dateFormatter)
+            let finalMessage = LogMessageFormatter.compose(message, using: ingredients, dateFormatter: dateFormatter)
             fileWriter.write(finalMessage)
         }
     }

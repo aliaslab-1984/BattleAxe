@@ -46,6 +46,22 @@ public final class LogService {
         self.providers = []
     }
     
+    /// Removes the passed channel to all the providers.
+    /// - Parameter channel: the channel that is going to be removed.
+    public static func silence(_ channel: String) {
+        providers.forEach { provider in
+            provider.removeChannel(channel)
+        }
+    }
+    
+    /// Adds the passed channel to all the providers.
+    /// - Parameter channel: the channel that is going to be added. If a provider already uses the passed channel it won't duplicate.
+    public static func add(_ channel: String) {
+        providers.forEach { provider in
+            provider.addChannel(channel)
+        }
+    }
+    
     /// The currently registered providers
     public static var currentProviders: [LogProvider] { return providers }
     

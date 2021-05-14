@@ -14,4 +14,7 @@ public protocol LogProvider {
     ///   - message: The message that's being logged.
     func log(_ message: LogMessage)
     
+    func addChannel(_ channel: String)
+    
+    func removeChannel(_ channel: String)
 }

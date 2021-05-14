@@ -1,6 +1,6 @@
 import Foundation
 
-public struct ConsoleLogProvider: LogProvider {
+public final class ConsoleLogProvider: LogProvider {
     
     public var logIdentifier: String
     
@@ -30,8 +30,16 @@ public struct ConsoleLogProvider: LogProvider {
         }
     }
     
+    public func addChannel(_ channel: String) {
+        channels.insert(channel)
+    }
+    
+    public func removeChannel(_ channel: String) {
+        channels.remove(channel)
+    }
+    
     private func printLog(_ message: LogMessage) {
-        let finalMessage = LogMessageComposer.compose(message, using: ingredients, dateFormatter: dateFormatter)
+        let finalMessage = LogMessageFormatter.compose(message, using: ingredients, dateFormatter: dateFormatter)
         print(finalMessage)
     }
 }

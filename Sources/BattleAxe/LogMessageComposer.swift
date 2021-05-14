@@ -7,8 +7,15 @@
 
 import Foundation
 
-public struct LogMessageComposer {
+public struct LogMessageFormatter {
     
+    
+    /// Given a log message creates a correclty formatted string following the ingredients provided.
+    /// - Parameters:
+    ///   - message: The message that needs to be formatted.
+    ///   - ingredients: The ingredients that need to be added to the formatted message.
+    ///   - dateFormatter: The dateformetter style.
+    /// - Returns: the formatted string.
     static func compose(_ message: LogMessage,
                         using ingredients: [LoggerConfiguration.LogIngredient],
                         dateFormatter: DateFormatter) -> String {

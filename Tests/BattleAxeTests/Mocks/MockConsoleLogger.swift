@@ -27,4 +27,12 @@ final class MockConsoleLogger: LogProvider {
         }
     }
     
+    func addChannel(_ channel: String) {
+        channels.insert(channel)
+    }
+    
+    func removeChannel(_ channel: String) {
+        channels.remove(channel)
+    }
+    
 }

@@ -46,4 +46,11 @@ public class ExternalLogHandler: LogProvider {
         
     }
     
+    public func addChannel(_ channel: String) {
+        channels.insert(channel)
+    }
+    
+    public func removeChannel(_ channel: String) {
+        channels.remove(channel)
+    }
 }

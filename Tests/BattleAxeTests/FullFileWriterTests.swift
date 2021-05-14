@@ -125,7 +125,20 @@ final class FullFileWriterTests: XCTestCase {
         let expectedFunc = "function"
         let expectedFile = "file"
         let line = 44
+        let channel = "Additional Channel"
+        logprovider.addChannel(channel)
         
+        logprovider.log(.debug, message: message, file: expectedFile, function: expectedFunc, line: line, channel: channel)
+        
+        XCTAssertNotNil(fileWriter.lastPrintedMessage)
+        
+        if let lastMessage = fileWriter.lastPrintedMessage {
+            XCTAssert(lastMessage == "{\(channel)} [\(LogSeverity.debug.prettyDescription)] \(message)")
+        } else {
+            XCTFail("The message is nil")
+        }
+        
+        logprovider.removeChannel(channel)
         logprovider.log(.debug, message: message, file: expectedFile, function: expectedFunc, line: line, channel: nil)
         
         XCTAssertNotNil(fileWriter.lastPrintedMessage)
@@ -145,7 +158,7 @@ final class FullFileWriterTests: XCTestCase {
         let severity = LogSeverity.error
         let data = Date()
         let formatter = LogDateFormatter(dateFormat: "yyyy-MM-dd")
-        let loggedMessage = LogMessageComposer.compose(LoggedMessage(callingThread: "MyThread", processId: 4, payload: message, severity: severity, callingFilePath: file, callingFileLine: fileLine, callingStackFrame: function, callingThreadID: 4, channel: LogService.defaultChannel, timestamp: data), using: LoggerConfiguration.naive.ingredients.sorted(), dateFormatter: formatter)
+        let loggedMessage = LogMessageFormatter.compose(LoggedMessage(callingThread: "MyThread", processId: 4, payload: message, severity: severity, callingFilePath: file, callingFileLine: fileLine, callingStackFrame: function, callingThreadID: 4, channel: LogService.defaultChannel, timestamp: data), using: LoggerConfiguration.naive.ingredients.sorted(), dateFormatter: formatter)
         
         let expectedMessage = "{\(LogService.defaultChannel)} [\(LogSeverity.error.prettyDescription)] \(message)"
         

@@ -91,6 +91,7 @@ final class LogServiceTests: XCTestCase {
         LogService.empty()
         let message1 = "Ciao"
         let message2 = "Ciao 2"
+        let message3 = "Ciao 3"
         let channelName = "Channel"
         let handler = MockConsoleLogger()
         let handler2 = MockConsoleLogger()
@@ -104,13 +105,36 @@ final class LogServiceTests: XCTestCase {
         XCTAssertNotNil(handler.lastMessage)
         XCTAssertEqual(handler.lastMessage?.payload, message1)
         
-        
         LogService.shared.log(.debug, message2, channel: channelName)
         
         XCTAssertNotNil(handler2.lastMessage)
         XCTAssertNotNil(handler.lastMessage)
         XCTAssertEqual(handler2.lastMessage?.payload, message2)
         XCTAssertEqual(handler.lastMessage?.payload, message1)
+        
+        let newChannel = "New Channel 📟"
+        handler.addChannel(newChannel)
+        handler2.addChannel(newChannel)
+        
+        handler.removeChannel(channelName)
+        handler2.removeChannel(channelName)
+        
+        LogService.shared.log(.debug, message3, channel: newChannel)
+        
+        XCTAssertNotNil(handler2.lastMessage)
+        XCTAssertNotNil(handler.lastMessage)
+        XCTAssertEqual(handler2.lastMessage?.payload, message3)
+        XCTAssertEqual(handler.lastMessage?.payload, message3)
+        
+        handler.lastMessage = nil
+        handler2.lastMessage = nil
+        LogService.shared.log(.debug, "Not going to be printed", channel: channelName)
+        
+        XCTAssertNil(handler2.lastMessage)
+        XCTAssertNil(handler.lastMessage)
+        
+        XCTAssert(handler.channels.count == 2)
+        XCTAssert(handler2.channels.count == 1)
     }
     
     func testLogDebug() {
@@ -204,11 +228,44 @@ final class LogServiceTests: XCTestCase {
         XCTAssertNotNil(fileWriter.lastPrintedMessage)
     }
     
+    func testSilenceChannel() {
+        LogService.empty()
+        let message1 = "Ciao"
+        let message2 = "Ciao 2"
+        let channelName = "Channel"
+        let handler = MockConsoleLogger()
+        let handler2 = MockConsoleLogger()
+        LogService.shared.minimumSeverity = .verbose
+        LogService.register(provider: handler)
+        LogService.register(provider: handler2)
+        LogService.add(channelName)
+        LogService.shared.debug(message1, channel: channelName)
+        LogService.currentProviders.forEach { provider in
+            XCTAssert(provider.channels.contains(channelName))
+        }
+        
+        // XCTAssertNotNil(handler.lastMessage)
+        // XCTAssertNotNil(handler2.lastMessage)
+        
+        LogService.silence(channelName)
+        LogService.currentProviders.forEach { provider in
+            XCTAssertFalse(provider.channels.contains(channelName))
+        }
+        handler.lastMessage = nil
+        handler2.lastMessage = nil
+        LogService.shared.debug(message2, channel: channelName)
+        
+        XCTAssertNil(handler.lastMessage)
+        XCTAssertNil(handler2.lastMessage)
+    }
+    
     func testExternalLogProvider() {
         let message = "Ciao"
+        let additionalChannel = "New Channel"
         let externalHandler = ExternalLogHandler()
         let listener = MockListener()
         externalHandler.setListener(listener: listener)
+        externalHandler.addChannel(additionalChannel)
         LogService.register(provider: externalHandler)
         LogService.shared.minimumSeverity = .info
         let cases = LogSeverity.allCases
@@ -217,6 +274,9 @@ final class LogServiceTests: XCTestCase {
         }
         
         XCTAssertNotNil(listener.lastMessage)
+        XCTAssert(externalHandler.channels.count == 2)
+        externalHandler.removeChannel(additionalChannel)
+        XCTAssert(externalHandler.channels.count == 1)
     }
     
     static var allTests = [
@@ -231,6 +291,7 @@ final class LogServiceTests: XCTestCase {
         ("testRemoveProvider", testRemoveProvider),
         ("testAllSeveritiesLogging", testAllSeveritiesLogging),
         ("testAllLoggingShortcuts", testAllLoggingShortcuts),
-        ("testLogChannel", testLogChannel)
+        ("testLogChannel", testLogChannel),
+        ("testSilenceChannel", testSilenceChannel)
     ]
 }
