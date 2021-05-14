@@ -119,7 +119,7 @@ final class FullFileWriterTests: XCTestCase {
         let configuration = FileWriterConfiguration(filename: "myFile", appGroup: nil, queueName: "StandardLogFileWriter", rotationConfiguration: .none, fileManager: mockManager, fileSeeker: BAFileController(fileSystemController: FileManager.default))
         let fileWriter = MockFileWriter(configuration)
         let formatter = LogDateFormatter(dateFormat: "yyyy-MM-dd")
-        let logprovider = FileLogProvider(dateFormatter: formatter, fileWriter: fileWriter)
+        let logprovider = FileLogProvider(dateFormatter: formatter, fileWriter: fileWriter, configuration: .naive)
         
         let message = "Ciao"
         let expectedFunc = "function"
@@ -131,10 +131,25 @@ final class FullFileWriterTests: XCTestCase {
         XCTAssertNotNil(fileWriter.lastPrintedMessage)
         
         if let lastMessage = fileWriter.lastPrintedMessage {
-            XCTAssert(lastMessage == "[\(LogSeverity.debug.prettyDescription) \(self.getCurrentDateString()) \(expectedFile):\(expectedFunc):\(line)] \(message)")
+            XCTAssert(lastMessage == "{\(LogService.defaultChannel)} [\(LogSeverity.debug.prettyDescription)] \(message)")
         } else {
             XCTFail("The message is nil")
         }
+    }
+    
+    func testLogComposer() {
+        let message = "Ciao"
+        let file = "myFile"
+        let function = "myFunction"
+        let fileLine = 1
+        let severity = LogSeverity.error
+        let data = Date()
+        let formatter = LogDateFormatter(dateFormat: "yyyy-MM-dd")
+        let loggedMessage = LogMessageComposer.compose(LoggedMessage(callingThread: "MyThread", processId: 4, payload: message, severity: severity, callingFilePath: file, callingFileLine: fileLine, callingStackFrame: function, callingThreadID: 4, channel: LogService.defaultChannel, timestamp: data), using: LoggerConfiguration.naive.ingredients.sorted(), dateFormatter: formatter)
+        
+        let expectedMessage = "{\(LogService.defaultChannel)} [\(LogSeverity.error.prettyDescription)] \(message)"
+        
+        XCTAssertEqual(loggedMessage, expectedMessage)
     }
     
     private func getCurrentDateString() -> String {
@@ -170,6 +185,7 @@ final class FullFileWriterTests: XCTestCase {
         ("testOSLogPerformances", testOSLogPerformances),
         ("testConsoleLogPerformances", testConsoleLogPerformances),
         ("testMultipleProviderPerformances", testMultipleProviderPerformances),
+        ("testLogComposer", testLogComposer)
         // ("testDeletion", testDeletion)
     ]
     

@@ -7,13 +7,18 @@ public struct FileLogProvider: LogProvider {
     
     private var dateFormatter: DateFormatter
     private var fileWriter: FileWriter
+    private var configuration: LoggerConfiguration
+    private var ingredients: [LoggerConfiguration.LogIngredient]
     
     public init(dateFormatter: DateFormatter,
                 fileWriter: FileWriter,
-                identifier: String = "Default FileLogProvider") {
+                identifier: String = "Default FileLogProvider",
+                configuration: LoggerConfiguration = LogService.shared.configuration) {
         self.dateFormatter = dateFormatter
         self.fileWriter = fileWriter
         self.logIdentifier = identifier
+        self.configuration = configuration
+        self.ingredients = configuration.ingredients.sorted()
     }
     
     public func log(_ severity: LogSeverity,
@@ -45,7 +50,8 @@ public struct FileLogProvider: LogProvider {
         if let _ = fileWriter as? BriefLogFileWriter {
             fileWriter.write("[\(message.severity.prettyDescription) \(message.callingFilePath):\(message.callingStackFrame):\(message.callingFileLine)] \(message.payload)")
         } else {
-            fileWriter.write("[\(message.severity.prettyDescription) \(dateFormatter.getCurrentDateAsString()) \(message.callingFilePath):\(message.callingStackFrame):\(message.callingFileLine)] \(message.payload)")
+            let finalMessage = LogMessageComposer.compose(message, using: ingredients, dateFormatter: dateFormatter)
+            fileWriter.write(finalMessage)
         }
     }
 }

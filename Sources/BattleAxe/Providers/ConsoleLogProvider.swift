@@ -6,11 +6,16 @@ public struct ConsoleLogProvider: LogProvider {
     
     private var dateFormatter: DateFormatter
     public var channels: Set<String> = .init([LogService.defaultChannel])
+    private var configuration: LoggerConfiguration
+    private var ingredients: [LoggerConfiguration.LogIngredient]
     
     public init(dateFormatter: DateFormatter,
-                identifier: String = "ConsoleLog Provider") {
+                identifier: String = "ConsoleLog Provider",
+                configuration: LoggerConfiguration = LogService.shared.configuration) {
         self.dateFormatter = dateFormatter
         self.logIdentifier = identifier
+        self.configuration = configuration
+        ingredients = configuration.ingredients.sorted()
     }
     
     public func log(_ message: LogMessage) {
@@ -26,13 +31,7 @@ public struct ConsoleLogProvider: LogProvider {
     }
     
     private func printLog(_ message: LogMessage) {
-        switch LogService.shared.configuration {
-        case .standard:
-            print("{\(message.channel)}[\(message.severity.prettyDescription) \(dateFormatter.getCurrentDateAsString())] \(message.callingFilePath):\(message.callingStackFrame):\(message.callingFileLine) \(message.payload)")
-        case .minimal:
-            print("{\(message.channel)}[\(message.severity.prettyDescription) \(dateFormatter.getCurrentDateAsString())] \(message.callingStackFrame) \(message.payload)")
-        default:
-            print("{\(message.channel)}[\(message.severity.prettyDescription) \(dateFormatter.getCurrentDateAsString())] \(message.payload)")
-        }
+        let finalMessage = LogMessageComposer.compose(message, using: ingredients, dateFormatter: dateFormatter)
+        print(finalMessage)
     }
 }
