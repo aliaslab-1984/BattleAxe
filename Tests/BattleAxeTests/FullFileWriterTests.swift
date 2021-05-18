@@ -49,6 +49,7 @@ final class FullFileWriterTests: XCTestCase {
         measure {
             fileWriter.write("Hello")
         }
+        
     }
     
     func testDefaultPerformances() {

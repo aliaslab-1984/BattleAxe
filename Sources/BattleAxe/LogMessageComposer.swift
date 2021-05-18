@@ -7,8 +7,8 @@
 
 import Foundation
 
-public struct LogMessageFormatter {
-    
+/// Helper struct that handles the creation of a printable message, given the message and the needed ingredients.
+struct LogMessageFormatter {
     
     /// Given a log message creates a correclty formatted string following the ingredients provided.
     /// - Parameters:

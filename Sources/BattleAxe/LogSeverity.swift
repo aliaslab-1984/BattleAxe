@@ -62,7 +62,7 @@ import os.log
 @available (iOS 10.0, *)
 internal extension LogSeverity {
     
-    func toOSLogLevel() -> OSLogType {
+    var OSLogLevel: OSLogType {
         switch self {
         case .debug:
             return .debug

@@ -7,8 +7,10 @@
 
 import Foundation
 
+/// Defines what pieces are going to be printed/shared by each LogProvider.
 public struct LoggerConfiguration: Equatable {
     
+    /// Represents each component that is going to be printed/shared by a LogProvider.
     enum LogIngredient: Int, CaseIterable, Equatable, Comparable {
         
         static func < (lhs: LoggerConfiguration.LogIngredient, rhs: LoggerConfiguration.LogIngredient) -> Bool {

@@ -46,7 +46,7 @@ public final class OSLogProvider: LogProvider {
     
     private func writeLog(with message: LogMessage) {
         let log = OSLog(subsystem: self.subsystem, category: message.channel)
-        let type = message.severity.toOSLogLevel()
+        let type = message.severity.OSLogLevel
         os_log("%{public}@", log: log, type: type, message.severity.emoji + " " + message.payload)
     }
     

@@ -16,15 +16,15 @@ final class LogSeverityTest: XCTestCase {
         for severity in severities {
             switch severity {
             case .info:
-                XCTAssert(severity.toOSLogLevel() == .info)
+                XCTAssert(severity.OSLogLevel == .info)
             case .verbose:
-                XCTAssert(severity.toOSLogLevel() == .default)
+                XCTAssert(severity.OSLogLevel == .default)
             case .debug:
-                XCTAssert(severity.toOSLogLevel() == .debug)
+                XCTAssert(severity.OSLogLevel == .debug)
             case .warning:
-                XCTAssert(severity.toOSLogLevel() == .fault)
+                XCTAssert(severity.OSLogLevel == .fault)
             case .error:
-                XCTAssert(severity.toOSLogLevel() == .error)
+                XCTAssert(severity.OSLogLevel == .error)
             }
         }
     }

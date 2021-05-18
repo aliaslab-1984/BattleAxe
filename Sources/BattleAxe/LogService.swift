@@ -42,6 +42,7 @@ public final class LogService {
         providers.remove(at: index)
     }
     
+    /// Removes all the registered providers.
     public static func empty() {
         self.providers = []
     }
