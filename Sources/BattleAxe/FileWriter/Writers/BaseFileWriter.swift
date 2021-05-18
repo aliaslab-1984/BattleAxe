@@ -47,6 +47,7 @@ open class BaseFileWriter: FileWriter {
     
     public func write(_ message: String) {
         // Does nothing
+        fatalError("Subclasses need to implement the `write(_ message: String)` method.")
     }
     
     /// Returns the URL where the log collection is stored.

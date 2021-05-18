@@ -59,11 +59,7 @@ private extension FileLogProvider {
     }
     
     func writeLog(message: LogMessage) {
-        if let _ = fileWriter as? BriefLogFileWriter {
-            fileWriter.write("[\(message.severity.prettyDescription) \(message.callingFilePath):\(message.callingStackFrame):\(message.callingFileLine)] \(message.payload)")
-        } else {
-            let finalMessage = LogMessageFormatter.compose(message, using: ingredients, dateFormatter: dateFormatter)
-            fileWriter.write(finalMessage)
-        }
+        let finalMessage = LogMessageFormatter.compose(message, using: ingredients, dateFormatter: dateFormatter)
+        fileWriter.write(finalMessage)
     }
 }
