@@ -3,14 +3,14 @@
 ![Swift](https://github.com/aliaslab-1984/BattleAxe/workflows/Swift/badge.svg)
 [![SwiftPM compatible](https://img.shields.io/badge/SwiftPM-compatible-brightgreen.svg)](https://swift.org/package-manager/)
 
-Welcome to BattleAxe, an easy and super extstensible Logger for iOS and macOS.
+Welcome to BattleAxe, an easy and super extensible Logger for iOS and macOS.
 
 To start using BattleAxe follow this steps:
 
-It might be useful to initialize all the LogProviders whenever the app is launched/created, in order to mantain syncronization.
+It might be useful to initialize all the LogProviders whenever the app is launched/created, in order to mantain synchronization.
 A good place for that could be `application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool` or `scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions)`if you use `SceneDelegate`.
 
-Here's a small example to intilaize `LogService`:
+Here's a small example to initilaize `LogService`:
 ``` swift
 let logDateFormatter = LogDateFormatter(dateFormat: "yyyy-MM-dd HH:mm:ssSSS")
 LogService.register(provider: ConsoleLogProvider(dateFormatter: logDateFormatter))
@@ -70,3 +70,51 @@ public protocol LogMessage {
 ```
 
 All of these information could be useful when you write your own `LogProvider` object.
+
+## Channels
+
+BattleAxe lets you organize your logs per Channel! This makes log filtering easier.
+By default, if you don't specify a channel to log into, BattleAxe is going to log on the default general channel (`BattleAxe 🪓`).
+To start using channels all you have to do is:
+1. Register all your `LogProvider` instances as it follows:
+
+```swift
+
+let provider = ConsoleLogProvider(dateFormatter: BattleAxe.LogDateFormatter.init(dateFormat: "dd-mm-yy"), configuration: .naive)
+LogService.register(provider: provider)
+
+```
+
+2. After that, you need to register all the channels that you intend to use on your project. We highly raccomend to define them in an enum, as we show below. This will make sure that you won't make typos and log on unwanted channels.
+```swift
+// Define a unique enum that holds all the LogChannels.
+enum LogChannel: String, CaseIterable {
+    
+    case networking = "Networking 📻"
+    case authentication = "Authentication 🗝"
+    case general = "General Logger 📝"
+    
+}
+```
+3. After defining your channels you only need to register them by using the `LogSevice` static method, or to register each provider with a subset of your channels:
+```swift
+// .. Into your logger:
+
+LogChannel.allCases.forEach {
+    LogService.add($0.rawValue)
+}
+```
+This approach subscribes *all* your registered providers to the specified channel.
+An alternative is to call the `addChannel(_ channel: String)` to a single `LogProvider`, like so:
+
+``` swift
+let provider = ConsoleLogProvider(dateFormatter: BattleAxe.LogDateFormatter.init(dateFormat: "dd-mm-yy"), configuration: .naive)
+let remoteProvider = MyProvider(dateFormatter: BattleAxe.LogDateFormatter.init(dateFormat: "dd-mm-yy"), configuration: .naive)
+
+// .. we want to share our .network Logs with the remoteProvider instance.
+
+remoteProvider.addChannel(LogChannel.networking)
+// from now all the logs that are shared via the `.network` channel, are going to be passed to the remoteProvider instance.
+
+```
+

@@ -23,6 +23,8 @@ public protocol LogListener: AnyObject {
 /// In this case, the app decides what to do with logs.
 public class ExternalLogHandler: LogProvider {
     
+    public var channels: Set<String> = .init([LogService.defaultChannel])
+    
     public var logIdentifier: String = "External Log Handler Identifier"
     
     private weak var listener: LogListener? = nil
@@ -32,7 +34,23 @@ public class ExternalLogHandler: LogProvider {
     }
     
     public func log(_ message: LogMessage) {
-        listener?.log(message.severity, message: message.payload)
+        
+        guard !channels.isEmpty else {
+            listener?.log(message.severity, message: message.payload)
+            return
+        }
+        
+        if channels.contains(message.channel) {
+            listener?.log(message.severity, message: message.payload)
+        }
+        
     }
     
+    public func addChannel(_ channel: String) {
+        channels.insert(channel)
+    }
+    
+    public func removeChannel(_ channel: String) {
+        channels.remove(channel)
+    }
 }

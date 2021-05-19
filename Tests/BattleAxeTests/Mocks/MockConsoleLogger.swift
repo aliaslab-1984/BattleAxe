@@ -9,12 +9,30 @@ import Foundation
 import BattleAxe
 
 final class MockConsoleLogger: LogProvider {
-    var logIdentifier: String = "MockConsole Logger"
+    public var channels: Set<String> = .init([LogService.defaultChannel])
     
-    func log(_ message: LogMessage) {
-        lastMessage = message
+    var logIdentifier: String = "MockConsole Logger"
+    var lastMessage: LogMessage? = nil
+    
+    
+    public func log(_ message: LogMessage) {
+        
+        guard !channels.isEmpty else {
+            lastMessage = message
+            return
+        }
+        
+        if channels.contains(message.channel) {
+            lastMessage = message
+        }
     }
     
-    var lastMessage: LogMessage? = nil
+    func addChannel(_ channel: String) {
+        channels.insert(channel)
+    }
+    
+    func removeChannel(_ channel: String) {
+        channels.remove(channel)
+    }
     
 }
