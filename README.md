@@ -3,14 +3,14 @@
 ![Swift](https://github.com/aliaslab-1984/BattleAxe/workflows/Swift/badge.svg)
 [![SwiftPM compatible](https://img.shields.io/badge/SwiftPM-compatible-brightgreen.svg)](https://swift.org/package-manager/)
 
-Welcome to BattleAxe, an easy and super extstensible Logger for iOS and macOS.
+Welcome to BattleAxe, an easy and super extensible Logger for iOS and macOS.
 
 To start using BattleAxe follow this steps:
 
-It might be useful to initialize all the LogProviders whenever the app is launched/created, in order to mantain syncronization.
+It might be useful to initialize all the LogProviders whenever the app is launched/created, in order to mantain synchronization.
 A good place for that could be `application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool` or `scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions)`if you use `SceneDelegate`.
 
-Here's a small example to intilaize `LogService`:
+Here's a small example to initilaize `LogService`:
 ``` swift
 let logDateFormatter = LogDateFormatter(dateFormat: "yyyy-MM-dd HH:mm:ssSSS")
 LogService.register(provider: ConsoleLogProvider(dateFormatter: logDateFormatter))
@@ -73,7 +73,7 @@ All of these information could be useful when you write your own `LogProvider` o
 
 ## Channels
 
-BattleAxe let's you organize your logs per Channel! This makes log filtering easier.
+BattleAxe lets you organize your logs per Channel! This makes log filtering easier.
 By default, if you don't specify a channel to log into, BattleAxe is going to log on the default general channel (`BattleAxe 🪓`).
 To start using channels all you have to do is:
 1. Register all your `LogProvider` instances as it follows:
