@@ -31,9 +31,10 @@ final class LogServiceTests: XCTestCase {
         XCTAssertNotNil(fileWriter.lastPrintedMessage)
         XCTAssertEqual(fileWriter.lastPrintedMessage, expectedMessage)
         
-        LogService.shared.log(.debug, message)
+        let secondExpectedMessage = message.uppercased() + " " + LogSeverity.debug.prettyDescription
+        LogService.shared.log(.debug, message.uppercased())
         XCTAssertNotNil(fileWriter.lastPrintedMessage)
-        XCTAssertEqual(fileWriter.lastPrintedMessage, expectedMessage)
+        XCTAssertEqual(fileWriter.lastPrintedMessage, secondExpectedMessage)
     }
     
     func testAllSeveritiesLogging() {

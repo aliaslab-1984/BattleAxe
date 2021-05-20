@@ -4,7 +4,11 @@ import Foundation
 /// In order to log something just use the shared instance and choose a log level, the LogService will take care for propagating the log to your providers.
 public final class LogService {
     
+    /// The list of current providers. Managed internally by `LogService`
     private static var providers = [LogProvider]()
+    
+    /// The currently registered providers
+    public static var currentProviders: [LogProvider] { return providers }
     
     /// Singleton instance.
     public static let shared = LogService(providers: providers)
@@ -26,6 +30,8 @@ public final class LogService {
         LogService.providers = providers
     }
     
+    // MARK: LogProvider lifecycle
+    
     /// Adds a new LogProvider object to the list.
     public static func register(provider: LogProvider) {
         providers.append(provider)
@@ -34,7 +40,8 @@ public final class LogService {
     /// Adds a new LogProvider object to the list.
     public static func unregister(provider: LogProvider) {
         guard let index = providers.firstIndex(where: { (item) -> Bool in
-            item.logIdentifier == provider.logIdentifier
+            item.logIdentifier == provider.logIdentifier &&
+                item.channels == provider.channels
         }) else {
             return
         }
@@ -47,6 +54,8 @@ public final class LogService {
         self.providers = []
     }
     
+    // MARK: Channel lifecycle
+    
     /// Removes the passed channel to all the providers.
     /// - Parameter channel: the channel that is going to be removed.
     public static func silence(_ channel: String) {
@@ -55,6 +64,8 @@ public final class LogService {
         }
     }
     
+    // MARK: Logging
+    
     /// Adds the passed channel to all the providers.
     /// - Parameter channel: the channel that is going to be added. If a provider already uses the passed channel it won't duplicate.
     public static func add(_ channel: String) {
@@ -62,9 +73,6 @@ public final class LogService {
             provider.addChannel(channel)
         }
     }
-    
-    /// The currently registered providers
-    public static var currentProviders: [LogProvider] { return providers }
     
     /// Convenience method. Calls log only if the build configuration is set to DEBUG.
     /// It calls verbose(), debug() ... depending on the `LogSeverity` specified at the begining.

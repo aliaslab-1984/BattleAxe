@@ -7,7 +7,7 @@
 
 import Foundation
 
-/// If you want to just listen logs you need to conform to this .
+/// Listen to any new log externally from the SDK.
 public protocol LogListener: AnyObject {
     
     /// Passes the logs from an external module to a LogListener
