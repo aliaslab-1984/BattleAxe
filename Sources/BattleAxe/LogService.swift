@@ -7,7 +7,7 @@ public final class LogService {
     private static var providers = [LogProvider]()
     
     /// Singleton instance.
-    public static let shared = LogService(providers: providers)
+    public static let shared = LogService()
     
     /// The minimum severity that will be displayed/saved. For reference see `LogSeverity` to
     /// see the rawValues.
@@ -21,10 +21,6 @@ public final class LogService {
     public static let defaultChannel: String = "BattleAxe 🪓"
     
     public typealias Dump = () -> Any
-    
-    private init(providers: [LogProvider]) {
-        LogService.providers = providers
-    }
     
     /// Adds a new LogProvider object to the list.
     public static func register(provider: LogProvider) {
