@@ -28,15 +28,15 @@ struct LogMessageFormatter {
             case .severity:
                 finalMessage.append("[\(message.severity.prettyDescription)] ")
             case .date:
-                finalMessage.append("\(dateFormatter.getCurrentDateAsString()) ")
+                finalMessage.append("⏱ \(dateFormatter.getCurrentDateAsString()) ")
             case .fileName:
-                finalMessage.append("\(message.callingFilePath):")
-            case .functionName:
-                finalMessage.append("\(message.callingStackFrame):")
+                finalMessage.append("📂 \(message.callingFilePath):")
             case .lineNumber:
-                finalMessage.append("(\(message.callingFileLine))")
+                finalMessage.append("(\(message.callingFileLine)) ")
+            case .functionName:
+                finalMessage.append("🤖 \(message.callingStackFrame)")
             case .payload:
-                finalMessage.append("\(message.payload)")
+                finalMessage.append(" 🔈💬\(message.payload)")
             }
         }
         
