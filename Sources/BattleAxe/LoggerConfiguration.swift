@@ -20,9 +20,9 @@ public struct LoggerConfiguration: Equatable {
         case channel = 0
         case severity = 1
         case date = 2
-        case functionName = 3
+        case fileName = 3
         case lineNumber = 4
-        case fileName = 5
+        case functionName = 5
         case payload = 6
     }
     

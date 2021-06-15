@@ -11,7 +11,7 @@ public final class LogService {
     public static var currentProviders: [LogProvider] { return providers }
     
     /// Singleton instance.
-    public static let shared = LogService(providers: providers)
+    public static let shared = LogService()
     
     /// The minimum severity that will be displayed/saved. For reference see `LogSeverity` to
     /// see the rawValues.
