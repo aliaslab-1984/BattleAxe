@@ -26,10 +26,6 @@ public final class LogService {
     
     public typealias Dump = () -> Any
     
-    private init(providers: [LogProvider]) {
-        LogService.providers = providers
-    }
-    
     // MARK: LogProvider lifecycle
     
     /// Adds a new LogProvider object to the list.
