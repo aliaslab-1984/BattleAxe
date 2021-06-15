@@ -32,7 +32,7 @@ public struct LoggerConfiguration: Equatable {
     /// filename, the function's name and the line number.
     public static let standard: LoggerConfiguration = .init(ingredients: .init(LogIngredient.allCases))
     /// A smaller log information: it includes only the function name in the log output.
-    public static let minimal: LoggerConfiguration = .init(ingredients: .init(arrayLiteral: .channel, .functionName, .payload))
+    public static let minimal: LoggerConfiguration = .init(ingredients: .init(arrayLiteral: .channel, .severity, .functionName, .payload))
     /// An even smaller log information: it doesn't includes any information about the file or the function's name.
     public static let naive: LoggerConfiguration = .init(ingredients: .init(arrayLiteral: .channel, .severity, .payload))
 }
