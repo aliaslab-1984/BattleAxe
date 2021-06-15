@@ -134,7 +134,7 @@ final class FullFileWriterTests: XCTestCase {
         XCTAssertNotNil(fileWriter.lastPrintedMessage)
         
         if let lastMessage = fileWriter.lastPrintedMessage {
-            XCTAssert(lastMessage == "{\(channel)} [\(LogSeverity.debug.prettyDescription)] \(message)")
+            XCTAssert(lastMessage == "{\(channel)} [\(LogSeverity.debug.prettyDescription)]  🔈💬\(message)")
         } else {
             XCTFail("The message is nil")
         }
@@ -145,7 +145,7 @@ final class FullFileWriterTests: XCTestCase {
         XCTAssertNotNil(fileWriter.lastPrintedMessage)
         
         if let lastMessage = fileWriter.lastPrintedMessage {
-            XCTAssert(lastMessage == "{\(LogService.defaultChannel)} [\(LogSeverity.debug.prettyDescription)] \(message)")
+            XCTAssert(lastMessage == "{\(LogService.defaultChannel)} [\(LogSeverity.debug.prettyDescription)]  🔈💬\(message)")
         } else {
             XCTFail("The message is nil")
         }
@@ -161,7 +161,7 @@ final class FullFileWriterTests: XCTestCase {
         let formatter = LogDateFormatter(dateFormat: "yyyy-MM-dd")
         let loggedMessage = LogMessageFormatter.compose(LoggedMessage(callingThread: "MyThread", processId: 4, payload: message, severity: severity, callingFilePath: file, callingFileLine: fileLine, callingStackFrame: function, callingThreadID: 4, channel: LogService.defaultChannel, timestamp: data), using: LoggerConfiguration.naive.ingredients.sorted(), dateFormatter: formatter)
         
-        let expectedMessage = "{\(LogService.defaultChannel)} [\(LogSeverity.error.prettyDescription)] \(message)"
+        let expectedMessage = "{\(LogService.defaultChannel)} [\(LogSeverity.error.prettyDescription)]  🔈💬\(message)"
         
         XCTAssertEqual(loggedMessage, expectedMessage)
     }
