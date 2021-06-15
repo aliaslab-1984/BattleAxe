@@ -8,6 +8,7 @@
 import XCTest
 @testable import BattleAxe
 
+// swiftlint:disable force_try
 final class RotatorTests: XCTestCase {
     
     func testRotateFileAreTooMuch() {
@@ -102,3 +103,4 @@ final class RotatorTests: XCTestCase {
         ("testDeleteAllSuccedes", testDeleteAllSuccedes)
     ]
 }
+// swiftlint:enable force_try

@@ -8,6 +8,7 @@
 import XCTest
 @testable import BattleAxe
 
+// swiftlint:disable force_try
 final class RotatorConfigurationTests: XCTestCase {
     
     func testSizeLimitNotSet() {
@@ -120,3 +121,4 @@ final class RotatorConfigurationTests: XCTestCase {
         ("testWithMockFiles", testWithMockFiles)
     ]
 }
+// swiftlint:enable force_try
