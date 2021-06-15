@@ -134,7 +134,10 @@ final class FullFileWriterTests: XCTestCase {
         XCTAssertNotNil(fileWriter.lastPrintedMessage)
         
         if let lastMessage = fileWriter.lastPrintedMessage {
-            XCTAssert(lastMessage == "{\(channel)} [\(LogSeverity.debug.prettyDescription)]  🔈💬\(message)")
+            let expectedMessage = decorated(channel: channel,
+                                            severity: LogSeverity.debug.prettyDescription,
+                                            message: message)
+            XCTAssertEqual(lastMessage, expectedMessage)
         } else {
             XCTFail("The message is nil")
         }
@@ -145,7 +148,10 @@ final class FullFileWriterTests: XCTestCase {
         XCTAssertNotNil(fileWriter.lastPrintedMessage)
         
         if let lastMessage = fileWriter.lastPrintedMessage {
-            XCTAssert(lastMessage == "{\(LogService.defaultChannel)} [\(LogSeverity.debug.prettyDescription)]  🔈💬\(message)")
+            let expectedMessage = decorated(channel: LogService.defaultChannel,
+                                            severity: LogSeverity.debug.prettyDescription,
+                                            message: message)
+            XCTAssertEqual(lastMessage, expectedMessage)
         } else {
             XCTFail("The message is nil")
         }
@@ -161,9 +167,22 @@ final class FullFileWriterTests: XCTestCase {
         let formatter = LogDateFormatter(dateFormat: "yyyy-MM-dd")
         let loggedMessage = LogMessageFormatter.compose(LoggedMessage(callingThread: "MyThread", processId: 4, payload: message, severity: severity, callingFilePath: file, callingFileLine: fileLine, callingStackFrame: function, callingThreadID: 4, channel: LogService.defaultChannel, timestamp: data), using: LoggerConfiguration.naive.ingredients.sorted(), dateFormatter: formatter)
         
-        let expectedMessage = "{\(LogService.defaultChannel)} [\(LogSeverity.error.prettyDescription)]  🔈💬\(message)"
-        
+        let expectedMessage = decorated(channel: LogService.defaultChannel,
+                                        severity: LogSeverity.error.prettyDescription,
+                                        message: message)
         XCTAssertEqual(loggedMessage, expectedMessage)
+    }
+    
+    private func decorated(channel: String, severity: String, message: String) -> String {
+        
+        let channelPrefix = LoggerConfiguration.LogIngredient.channel.prefixDecoration
+        let channelPostfix = LoggerConfiguration.LogIngredient.channel.postfixDecoration
+        let severityPrefix = LoggerConfiguration.LogIngredient.severity.prefixDecoration
+        let severityPostfix = LoggerConfiguration.LogIngredient.severity.postfixDecoration
+        let payloadPrefix = LoggerConfiguration.LogIngredient.payload.prefixDecoration
+        let payloadPostfix = LoggerConfiguration.LogIngredient.payload.postfixDecoration
+        
+        return "\(channelPrefix)\(channel)\(channelPostfix)\(severityPrefix)\(severity)\(severityPostfix)\(payloadPrefix)\(message)\(payloadPostfix)"
     }
     
     private func getCurrentDateString() -> String {

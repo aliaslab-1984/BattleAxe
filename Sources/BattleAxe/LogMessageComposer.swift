@@ -22,25 +22,57 @@ struct LogMessageFormatter {
         var finalMessage: String = ""
         
         ingredients.forEach { ingredient in
+            
+            let prefix = ingredient.prefixDecoration
+            let postfix = ingredient.postfixDecoration
+            
             switch ingredient {
             case .channel:
-                finalMessage.append("{\(message.channel)} ")
+                finalMessage.append("\(prefix)\(message.channel)\(postfix)")
             case .severity:
-                finalMessage.append("[\(message.severity.prettyDescription)] ")
+                finalMessage.append("\(prefix)\(message.severity.prettyDescription)\(postfix)")
             case .date:
-                finalMessage.append("⏱ \(dateFormatter.getCurrentDateAsString()) ")
+                finalMessage.append("\(prefix)\(dateFormatter.getCurrentDateAsString())\(postfix)")
             case .fileName:
-                finalMessage.append("📂 \(message.callingFilePath):")
+                finalMessage.append("\(prefix)\(message.callingFilePath)\(postfix)")
             case .lineNumber:
-                finalMessage.append("(\(message.callingFileLine)) ")
+                finalMessage.append("\(prefix)\(message.callingFileLine)\(postfix)")
             case .functionName:
-                finalMessage.append("🤖 \(message.callingStackFrame)")
+                finalMessage.append("\(prefix)\(message.callingStackFrame)\(postfix)")
             case .payload:
-                finalMessage.append(" 🔈💬\(message.payload)")
+                finalMessage.append("\(prefix)\(message.payload)\(postfix)")
             }
         }
         
         return finalMessage
     }
+}
+
+extension LoggerConfiguration.LogIngredient {
     
+    var prefixDecoration: String {
+        
+        switch self {
+        case .channel: return "{"
+        case .severity: return "["
+        case .date: return "⏱ "
+        case .fileName: return "📂 "
+        case .lineNumber: return "("
+        case .functionName: return "🤖 "
+        case .payload: return " 🔈💬"
+        }
+    }
+    
+    var postfixDecoration: String {
+        
+        switch self {
+        case .channel: return "} "
+        case .severity: return "] "
+        case .date: return " "
+        case .fileName: return ":"
+        case .lineNumber: return ") "
+        case .functionName: return ""
+        case .payload: return ""
+        }
+    }
 }
