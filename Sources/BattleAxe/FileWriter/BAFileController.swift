@@ -20,31 +20,12 @@ public final class BAFileController: BAFileSeeker {
     
     public func open(at path: String) {
         self.path = path
-        if !fileSystem.fileExists(atPath: path, isDirectory: nil) {
-            fileSystem.createFile(atPath: path,
-                                  contents: nil,
-                                  attributes: nil)
-        }
-
-        fileHandle = FileHandle(forWritingAtPath: path)
-    }
-    
-    private func seekToEnd() {
-        restoreFileifNeeded()
-        if #available(iOS 13.4, macOS 10.15.4, *) {
-            do {
-                try fileHandle?.seekToEnd()
-            } catch _ {
-                // handle error..
-            }
-        } else {
-            fileHandle?.seekToEndOfFile()
-        }
+        restoreFileIfNeeded()
     }
     
     public func write(_ data: Data) {
-        restoreFileifNeeded()
-        self.seekToEnd()
+        restoreFileIfNeeded()
+        seekToEnd()
         
         if #available(iOS 13.4, macOS 10.15.4, *) {
             do {
@@ -58,7 +39,7 @@ public final class BAFileController: BAFileSeeker {
     }
     
     public func readAll() -> Data? {
-        restoreFileifNeeded()
+        restoreFileIfNeeded()
         
         if #available(iOS 13.4, macOS 10.15.4, *) {
             do {
@@ -87,8 +68,12 @@ public final class BAFileController: BAFileSeeker {
         
         fileHandle = nil
     }
+
+}
+
+private extension BAFileController {
     
-    private func restoreFileifNeeded() {
+    func restoreFileIfNeeded() {
         guard let unwrappedPath = path else {
             return
         }
@@ -98,5 +83,18 @@ public final class BAFileController: BAFileSeeker {
 
         fileHandle = FileHandle(forWritingAtPath: unwrappedPath)
     }
-
+    
+    func seekToEnd() {
+        restoreFileIfNeeded()
+        if #available(iOS 13.4, macOS 10.15.4, *) {
+            do {
+                try fileHandle?.seekToEnd()
+            } catch _ {
+                // handle error..
+            }
+        } else {
+            fileHandle?.seekToEndOfFile()
+        }
+    }
+    
 }
