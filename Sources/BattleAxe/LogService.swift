@@ -70,6 +70,22 @@ public final class LogService {
         }
     }
     
+    /// Convenience method.
+    ///
+    /// Same as `ifDebug(_ severity: LogSeverity, _ object: @autoclosure @escaping Dump, channel: String? = nil, filename: String = #file, funcName: String = #function, line:`, but with the fixed severity level of `.debugOnly`
+    /// - Parameters:
+    ///   - object: The message that should be displayed.
+    ///   - filename: The filename
+    ///   - funcName: The method name.
+    ///   - line: The file's line.
+    public func ifDebug(_ object: @autoclosure @escaping Dump,
+                        channel: String? = nil,
+                        filename: String = #file,
+                        funcName: String = #function,
+                        line: Int = #line) {
+        ifDebug(.debugOnly, object, channel: channel, filename: filename, funcName: funcName, line: line)
+    }
+    
     /// Convenience method. Calls log only if the build configuration is set to DEBUG.
     /// It calls verbose(), debug() ... depending on the `LogSeverity` specified at the begining.
     /// - Parameters:
@@ -80,11 +96,12 @@ public final class LogService {
     ///   - line: The file's line.
     public func ifDebug(_ severity: LogSeverity,
                         _ object: @autoclosure @escaping Dump,
+                        channel: String? = nil,
                         filename: String = #file,
                         funcName: String = #function,
                         line: Int = #line) {
         #if DEBUG
-            log(severity, object, filename: filename, funcName: funcName, line: line)
+            log(severity, object, channel: channel, filename: filename, funcName: funcName, line: line)
         #else
             return
         #endif
@@ -244,7 +261,7 @@ public final class LogService {
                           line: Int = #line,
                           funcName: String = #function) {
         
-        guard minimumSeverity <= severity, enabled  else {
+        guard minimumSeverity <= severity, enabled else {
             return
         }
         
@@ -263,6 +280,10 @@ public final class LogService {
                            filename: String = #file,
                            line: Int = #line,
                            funcName: String = #function) {
+        
+        #if !DEBUG
+        if severity == .debugOnly { return }
+        #endif
         
         var threadID: UInt64 = 0
         pthread_threadid_np(nil, &threadID)

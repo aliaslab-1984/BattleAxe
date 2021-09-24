@@ -3,6 +3,7 @@ import Foundation
 public enum LogSeverity: Int, Comparable, CaseIterable, Codable {
     
     case verbose = 10
+    case debugOnly = 15
     case debug = 20
     case info = 30
     case warning = 40
@@ -20,6 +21,8 @@ extension LogSeverity {
         switch self {
         case .info:
             return "ℹ️"
+        case .debugOnly:
+            return "🐞"
         case .debug:
             return "🔨"
         case .error:
@@ -38,6 +41,8 @@ extension LogSeverity: CustomStringConvertible {
         switch self {
         case .verbose:
             return "Verbose"
+        case .debugOnly:
+            return "DebugOnly"
         case .debug:
             return "Debug"
         case .info:
@@ -62,7 +67,7 @@ internal extension LogSeverity {
     
     var OSLogLevel: OSLogType {
         switch self {
-        case .debug:
+        case .debug, .debugOnly:
             return .debug
         case .error:
             return .error
