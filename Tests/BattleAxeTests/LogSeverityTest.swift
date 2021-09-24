@@ -25,6 +25,8 @@ final class LogSeverityTest: XCTestCase {
                 XCTAssert(severity.OSLogLevel == .fault)
             case .error:
                 XCTAssert(severity.OSLogLevel == .error)
+            case .debugOnly:
+                XCTAssert(severity.OSLogLevel == .debug)
             }
         }
     }
@@ -42,6 +44,8 @@ final class LogSeverityTest: XCTestCase {
                 XCTAssert(severity.description == "Debug")
             case .warning:
                 XCTAssert(severity.description == "Warning")
+            case .debugOnly:
+                XCTAssert(severity.description == "DebugOnly")
             case .error:
                 XCTAssert(severity.description == "Error")
             }
@@ -59,6 +63,8 @@ final class LogSeverityTest: XCTestCase {
                 XCTAssert(severity.emoji == "📗")
             case .debug:
                 XCTAssert(severity.emoji == "🔨")
+            case .debugOnly:
+                XCTAssert(severity.emoji == "🐞")
             case .warning:
                 XCTAssert(severity.emoji == "⚠️")
             case .error:

@@ -79,6 +79,8 @@ final class LogServiceTests: XCTestCase {
                 LogService.shared.info(message)
             case .warning:
                 LogService.shared.warning(message)
+            case .debugOnly:
+                LogService.shared.ifDebug(message)
             }
             
             let expectedMessage = message + " " + severity.prettyDescription
