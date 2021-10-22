@@ -17,6 +17,12 @@ internal extension String {
             data.appendToFile(using: fileHandle)
         }
     }
+    
+    /// Extracts the filename from the filepath.
+    var fileName: String {
+        let components = self.components(separatedBy: "/")
+        return components.isEmpty ? self : components.last!
+    }
 }
 
 internal extension Data {

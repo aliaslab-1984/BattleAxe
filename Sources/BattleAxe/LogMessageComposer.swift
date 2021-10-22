@@ -34,7 +34,7 @@ struct LogMessageFormatter {
             case .date:
                 finalMessage.append("\(prefix)\(dateFormatter.getCurrentDateAsString())\(postfix)")
             case .fileName:
-                finalMessage.append("\(prefix)\(message.callingFilePath)\(postfix)")
+                finalMessage.append("\(prefix)\(message.callingFilePath.fileName)\(postfix)")
             case .lineNumber:
                 finalMessage.append("\(prefix)\(message.callingFileLine)\(postfix)")
             case .functionName:

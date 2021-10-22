@@ -155,6 +155,13 @@ final class LogServiceTests: XCTestCase {
 //        #endif
     }
     
+    func testLogFileFormatting() {
+        let composedMessage = LogMessageFormatter.compose(LoggedMessage(payload: "Hello", severity: .debug, callingFilePath: "users/francescobianco/esempio/file.swift", callingFileLine: 1, callingStackFrame: "testLogFileFormatting", callingThreadID: 1, channel: ""), using: [.fileName], dateFormatter: LogDateFormatter())
+        
+        let expectedResult = LoggerConfiguration.LogIngredient.fileName.prefixDecoration + "file.swift" + LoggerConfiguration.LogIngredient.fileName.postfixDecoration
+        XCTAssertEqual(composedMessage, expectedResult)
+    }
+    
     func expectedIntMessage() -> Int {
         return 23
     }
@@ -295,6 +302,7 @@ final class LogServiceTests: XCTestCase {
         ("testAllSeveritiesLogging", testAllSeveritiesLogging),
         ("testAllLoggingShortcuts", testAllLoggingShortcuts),
         ("testLogChannel", testLogChannel),
-        ("testSilenceChannel", testSilenceChannel)
+        ("testSilenceChannel", testSilenceChannel),
+        ("testLogFileFormatting", testLogFileFormatting)
     ]
 }

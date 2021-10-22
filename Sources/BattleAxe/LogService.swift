@@ -145,7 +145,7 @@ public final class LogService {
         evaluate(severity: .info,
                  object,
                  channel: channel ?? Self.defaultChannel,
-                 filename: LogService.fileName(filePath: filename),
+                 filename: filename,
                  line: line,
                  funcName: funcName)
     }
@@ -166,7 +166,7 @@ public final class LogService {
         evaluate(severity: .debug,
                  object,
                  channel: channel ?? Self.defaultChannel,
-                 filename: LogService.fileName(filePath: filename),
+                 filename: filename,
                  line: line,
                  funcName: funcName)
     }
@@ -187,7 +187,7 @@ public final class LogService {
         evaluate(severity: .verbose,
                  object,
                  channel: channel ?? Self.defaultChannel,
-                 filename: LogService.fileName(filePath: filename),
+                 filename: filename,
                  line: line,
                  funcName: funcName)
     }
@@ -208,7 +208,7 @@ public final class LogService {
         evaluate(severity: .warning,
                  object,
                  channel: channel ?? Self.defaultChannel,
-                 filename: LogService.fileName(filePath: filename),
+                 filename: filename,
                  line: line,
                  funcName: funcName)
     }
@@ -229,7 +229,7 @@ public final class LogService {
         evaluate(severity: .error,
                  object,
                  channel: channel ?? Self.defaultChannel,
-                 filename: LogService.fileName(filePath: filename),
+                 filename: filename,
                  line: line,
                  funcName: funcName)
     }
@@ -277,10 +277,4 @@ public final class LogService {
         }
     }
     
-    /// Extracts the filename from the filepath.
-    private static func fileName(filePath: String) -> String {
-        
-        let components = filePath.components(separatedBy: "/")
-        return components.isEmpty ? "" : components.last!
-    }
 }
