@@ -56,7 +56,19 @@ final class RotatorConfigurationTests: XCTestCase {
         
         let result = rotator.belowMaxAge(fakeFileCreationDate)
         
-        XCTAssertFalse(result)
+        XCTAssert(result)
+    }
+    
+    func testDefaultConfiguration() {
+        let rotator = FileWriterConfiguration.defaultConfig(name: "", queueName: "").rotationConfiguration
+        
+        let fakeFileCreationDate = Date().addingTimeInterval(-14.0.daysToSeconds)
+        
+        let result = rotator.belowMaxAge(fakeFileCreationDate)
+        
+        XCTAssertTrue(result)
+        XCTAssertTrue(rotator.belowMaxNumberOfFiles(2))
+        XCTAssertFalse(rotator.belowMaxNumberOfFiles(3))
     }
     
     func testOlderCreationDate() {

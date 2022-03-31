@@ -124,7 +124,7 @@ public final class RotatorConfiguration {
     /// - Returns: **True** if the requirements are fulfilled, otherwise **false**.
     func belowMaxAge(_ date: Date) -> Bool {
         
-        guard maxAge > 0 else {
+        guard abs(maxAge) > 0 else {
             return true
         }
         
@@ -144,7 +144,7 @@ public final class RotatorConfiguration {
             return false
         }
         
-        return numberOfFiles < maxFiles
+        return numberOfFiles <= maxFiles
     }
     
 }
