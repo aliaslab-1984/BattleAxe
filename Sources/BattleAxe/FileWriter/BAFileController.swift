@@ -61,7 +61,7 @@ public final class BAFileController: BAFileSeeker {
         if #available(iOS 13.4, macOS 10.15.4, *) {
             do {
                 try fileHandle?.close()
-            } catch _ {
+            } catch let error {
                 // handle error
                 print("[🪓] Failed to close logs file: \(error.localizedDescription)")
             }
