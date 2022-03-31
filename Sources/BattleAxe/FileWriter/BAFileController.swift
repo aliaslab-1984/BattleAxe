@@ -30,8 +30,9 @@ public final class BAFileController: BAFileSeeker {
         if #available(iOS 13.4, macOS 10.15.4, *) {
             do {
                 try fileHandle?.write(contentsOf: data)
-            } catch _ {
+            } catch let error {
                 // handle error
+                print("[🪓] Failed to update logs file: \(error.localizedDescription)")
             }
         } else {
             fileHandle?.write(data)
@@ -45,8 +46,9 @@ public final class BAFileController: BAFileSeeker {
             do {
                 let data = try fileHandle?.readToEnd()
                 return data
-            } catch _ {
+            } catch let error {
                 // handle error
+                print("[🪓] Failed to read logs file: \(error.localizedDescription)")
                 return nil
             }
         } else {
@@ -61,11 +63,11 @@ public final class BAFileController: BAFileSeeker {
                 try fileHandle?.close()
             } catch _ {
                 // handle error
+                print("[🪓] Failed to close logs file: \(error.localizedDescription)")
             }
         } else {
             fileHandle?.closeFile()
         }
-        
         fileHandle = nil
     }
 
@@ -75,6 +77,7 @@ private extension BAFileController {
     
     func restoreFileIfNeeded() {
         guard let unwrappedPath = path else {
+            print("[🪓] Logs file path doesn't exists.")
             return
         }
         if !fileSystem.fileExists(atPath: unwrappedPath, isDirectory: nil) {
