@@ -124,8 +124,8 @@ public final class RotatorConfiguration {
     /// - Returns: **True** if the requirements are fulfilled, otherwise **false**.
     func belowMaxAge(_ date: Date) -> Bool {
         
-        guard maxAge != 0 else {
-            return false
+        guard maxAge > 0 else {
+            return true
         }
         
         let timeIntervalFromCreationSinceNow = Date().timeIntervalSince(date)
