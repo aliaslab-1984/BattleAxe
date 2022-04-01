@@ -88,7 +88,7 @@ private extension BAFileController {
         if let handle = FileHandle(forUpdatingAtPath: unwrappedPath) {
             fileHandle = handle
         } else {
-            print("[🪓] Unable to instantiate FileHandle)
+            print("[🪓] Unable to instantiate FileHandle")
         }
                   
     }
