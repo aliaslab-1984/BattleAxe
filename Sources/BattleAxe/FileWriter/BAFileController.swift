@@ -77,14 +77,20 @@ private extension BAFileController {
     
     func restoreFileIfNeeded() {
         guard let unwrappedPath = path else {
-            print("[🪓] Logs file path doesn't exists.")
+            print("[🪓] Logs file path is null.")
             return
         }
+        
         if !fileSystem.fileExists(atPath: unwrappedPath, isDirectory: nil) {
             fileSystem.createFile(atPath: unwrappedPath, contents: nil, attributes: nil)
         }
-
-        fileHandle = FileHandle(forWritingAtPath: unwrappedPath)
+        
+        if let handle = FileHandle(forUpdatingAtPath: unwrappedPath) {
+            fileHandle = handle
+        } else {
+            print("[🪓] Unable to instantiate FileHandle)
+        }
+                  
     }
     
     func seekToEnd() {
