@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import UIKit
 
 // - MARK: BAFileController
 public final class BAFileController: BAFileSeeker {
@@ -79,10 +78,7 @@ public final class BAFileController: BAFileSeeker {
     }
     
     public static var deviceInfo: String {
-        let processInfo = ProcessInfo()
-        let iosVersion = processInfo.operatingSystemVersionString
-        let device = UIDevice.current.localizedModel
-        return device + "\n" + iosVersion
+        return ProcessInfo().humanReadableReport
     }
 
 }
@@ -121,3 +117,28 @@ private extension BAFileController {
     }
     
 }
+
+#if canImport(UIKit)
+import UIKit
+
+extension ProcessInfo {
+    
+    var humanReadableReport: String {
+        let device = UIDevice.current.localizedModel
+        return device + "\n" + operatingSystemVersionString
+    }
+    
+}
+
+#else
+
+
+extension ProcessInfo {
+    
+    var humanReadableReport: String {
+        return "Unknown Device" + "\n" + operatingSystemVersionString
+    }
+    
+}
+
+#endif
