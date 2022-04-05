@@ -209,6 +209,11 @@ final class FullFileWriterTests: XCTestCase {
         return "\(year)-\(stringMonth)-\(stringDay)"
     }
     
+    func testDeviceInfoName() {
+        let device = BAFileController.deviceInfo
+        XCTAssertTrue(!device.isEmpty)
+    }
+    
     static var allTests = [
         ("testExample", testExample),
         ("testPerformances", testPerformances),
@@ -218,7 +223,8 @@ final class FullFileWriterTests: XCTestCase {
         ("testOSLogPerformances", testOSLogPerformances),
         ("testConsoleLogPerformances", testConsoleLogPerformances),
         ("testMultipleProviderPerformances", testMultipleProviderPerformances),
-        ("testLogComposer", testLogComposer)
+        ("testLogComposer", testLogComposer),
+        ("testDeviceInfoName", testDeviceInfoName)
         // ("testDeletion", testDeletion)
     ]
     

@@ -51,6 +51,7 @@ open class BaseFileWriter: FileWriter {
     }
     
     /// Returns the URL where the log collection is stored.
+    @available(*, deprecated, message: "Use fileData() instead.")
     public func logsURL() -> URL? {
         return URL(string: filePath)
     }

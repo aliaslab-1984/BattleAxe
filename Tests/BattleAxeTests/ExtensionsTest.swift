@@ -65,7 +65,6 @@ final class ExtensionsTest: XCTestCase {
         XCTAssert(expectedFormat == formatter.getCurrentDateAsString(date: currentDate))
     }
     
-    
     static var allTests = [
         ("testIntExtensions", testIntExtensions),
         ("testUIntExtensions", testUIntExtensions),

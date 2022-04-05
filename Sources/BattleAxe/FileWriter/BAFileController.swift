@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 // - MARK: BAFileController
 public final class BAFileController: BAFileSeeker {
@@ -44,8 +45,15 @@ public final class BAFileController: BAFileSeeker {
         
         if #available(iOS 13.4, macOS 10.15.4, *) {
             do {
-                let data = try fileHandle?.readToEnd()
-                return data
+                guard let data = try fileHandle?.readToEnd() else {
+                    return nil
+                }
+                
+                guard let stringRepresentation = String(data: data, encoding: .utf8) else {
+                    return nil
+                }
+                let finalStrig = Self.deviceInfo + "\n" + stringRepresentation
+                return finalStrig.data(using: .utf8)
             } catch let error {
                 // handle error
                 print("[🪓] Failed to read logs file: \(error.localizedDescription)")
@@ -54,7 +62,6 @@ public final class BAFileController: BAFileSeeker {
         } else {
             return fileHandle?.readDataToEndOfFile()
         }
-        
     }
     
     public func close() {
@@ -69,6 +76,13 @@ public final class BAFileController: BAFileSeeker {
             fileHandle?.closeFile()
         }
         fileHandle = nil
+    }
+    
+    public static var deviceInfo: String {
+        let processInfo = ProcessInfo()
+        let iosVersion = processInfo.operatingSystemVersionString
+        let device = UIDevice.current.localizedModel
+        return device + "\n" + iosVersion
     }
 
 }
